@@ -215,6 +215,6 @@ for (arq in arqs) {
     select(-decode_date, -original_metar)
   
   ## Final ----
-  write_csv(df, paste0("datasets/","metar-",localidade,"-2025",".csv"))
+  write_csv(df, paste0("datasets/","metar_",localidade,"_2025",".csv"))
   print(paste(localidade, "feita!"))
 }
