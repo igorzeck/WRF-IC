@@ -1,0 +1,7 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+datasets/*
+!datasets/*.csv
+!.gitignore
