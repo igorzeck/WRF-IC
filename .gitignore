@@ -4,4 +4,5 @@
 .Ruserdata
 datasets/*
 !datasets/*.csv
+!datasets/*.rds
 !.gitignore
