@@ -1,7 +1,7 @@
 # Comparação de tempos de execução do modelo WRF por tempo
 # Testado com/em: 
 # 1. Dados do GFS (preferencialmente 1ºX1º)
-# 2. Dados com 6 cores para o WRF
+# 2. Modelo rodado com 6 cores da CPU para o WRF
 # 3. Computador com as seguintes especificações:
 # [code]
 # System:
@@ -106,6 +106,7 @@
 # Version 4.6.0
 # 6. É possível que as bibliotecas utilizadas para compilar o WRF possam
 # Afetar também o desempenho!
+# 7. interval_seconds como sendo 3h a 3hd
 # Setup ----
 library(dplyr)
 library(lubridate)

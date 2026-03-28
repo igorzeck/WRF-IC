@@ -2,7 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-datasets/*
+datasets/*.nc
 !datasets/*.csv
-!datasets/*.rds
 !.gitignore

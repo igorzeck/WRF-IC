@@ -28,8 +28,8 @@ dt_pstr_data = "%Y-%m-%d"
 dt_pstr_comp = "%Y-%m-%d %H:%M:%S"
 
 # Parâmetros modificáveis
-data_ini = datetime.date(2025, 1, 1)
-data_fim = datetime.date(2025, 12, 31)
+data_ini = datetime.date(2026, 1, 1)
+data_fim = datetime.date(2026, 12, 31)
 localidade=input("Localidade:")
 
 data_ini_str = data_ini.strftime(dt_pstr + "00")
