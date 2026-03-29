@@ -107,6 +107,8 @@
 # 6. É possível que as bibliotecas utilizadas para compilar o WRF possam
 # Afetar também o desempenho!
 # 7. interval_seconds como sendo 3h a 3hd
+# 8. max_dom = 4
+# 9. dx = dy = 27000 (metros)
 # Setup ----
 library(dplyr)
 library(lubridate)

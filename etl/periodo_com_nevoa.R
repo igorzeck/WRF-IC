@@ -50,4 +50,5 @@ paste0("Max: ", max_vis, "m")
 min_vis <- min(df_p$visibility)
 paste0("Min: ", min_vis, "m")
 paste0("Range: ", max_vis - min_vis, "m")
-# 
+# Export ----
+write_csv(df_p, "datasets/gerados/df_2026_menos_vis_7000m_cont.csv")

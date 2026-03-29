@@ -11,3 +11,4 @@ tempo <- readline(prompt="Período total de input (XhYmZs): ")
 #  Período de previsão apenas para o modelo WRF!
 prev <- predict(modelo, newdata = data.frame(input_s = period_to_seconds(hms(tempo))))
 print(seconds_to_period(prev))
+
