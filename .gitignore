@@ -3,6 +3,5 @@
 .RData
 .Ruserdata
 *.nc
-*wrfout_d*
 !datasets/*.csv
 !.gitignore
