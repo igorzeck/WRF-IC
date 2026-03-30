@@ -3,5 +3,6 @@
 .RData
 .Ruserdata
 *.nc
+*.grib*
 !datasets/*.csv
 !.gitignore

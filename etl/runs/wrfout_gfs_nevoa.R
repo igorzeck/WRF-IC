@@ -1,5 +1,6 @@
 # Comparação entre dados simulados WRFOUT com METARs
 # RUN: 
+# TODO: Consertar comentários
 #  Data: 2026-01-24 (00:00 - 12:00)
 #  Local: SBGL
 # Setup ----
@@ -81,16 +82,13 @@ get_coord_ids <- function(nc_arq) {
   # Coluna 2 é id longitude (para qual o latitude (id 1) é constante)
   # Estritamente falando o id vai ser o mesmo nas duas matrizes!
   iy <- min_lat_id[1,2]
-  iy
   min_lat <- xlat[1,iy]
-  min_lat
-  paste0("Erro absoluto: ", round(abs(min_lat - lat_ref) * g_medio, 3), "m")
+  print(paste0("Erro absoluto (lat): ", round(abs(min_lat - lat_ref) * g_medio, 3), "m"))
   # Longitude mínima
   # Coluna 1 é id latitude (para qual a longitude (id 2) é constante)
   ix <- min_long_id[1,1]
-  ix
   min_long <- xlong[ix,1]
-  paste0("Erro absoluto: ", round(abs(min_long - long_ref) * g_medio, 3), "m")
+  print(paste0("Erro absoluto (long): ", round(abs(min_long - long_ref) * g_medio, 3), "m"))
   
   return(c(ix, iy))
 }
