@@ -22,20 +22,18 @@ df_metar <- read_csv("datasets/metar_SBGL_2026.csv")
 df_metar
 
 ## Tempo ----
-# Abre um NC qualquer para pegar as unidades de tempo
-nc_arq <- nc_open("datasets/wrfout/wrfout_d01_2026-01-24.nc")
+nc_arq <- nc_open("datasets/gfs/gfs_2026-01-24_surface.nc")
 
-valores_t <- ncvar_get(nc_arq, "XTIME")
-unid_t <- ncatt_get(nc_arq, "XTIME", "units")$value
+valores_t <- ncvar_get(nc_arq, "time")
+unid_t <- ncatt_get(nc_arq, "time", "units")$value
 unid_t
-# "minutes since 2026-01-24 00:00:00"
+# "seconds since 1970-01-01 00:00:00.0 0:00"
 
 # Extrai a data de origem
 t_ustr <- strsplit(unid_t, " ")
 t_origem <- paste(unlist(t_ustr)[3], unlist(t_ustr)[4])
 
-# valores_t * 60 -> de minutos para segundos
-seq_h <- as.POSIXct(valores_t * 60, origin = t_origem, tz = "UTC")
+seq_h <- as.POSIXct(valores_t, origin = t_origem, tz = "UTC")
 
 nc_close(nc_arq)
 
@@ -47,58 +45,52 @@ get_coord_ids <- function(nc_arq) {
   # nc_arq assumido já aberto com nc_open
   # Variáveis:
   # (Tempo, Latitude (X), Longitude (Y))
-  # float XLAT(Time, south_north, west_east) ;
-  # XLAT:FieldType = 104 ;
-  # XLAT:MemoryOrder = "XY " ;
-  # XLAT:description = "LATITUDE, SOUTH IS NEGATIVE" ;
-  # XLAT:units = "degree_north" ;
-  # XLAT:stagger = "" ;
-  # XLAT:coordinates = "XLONG XLAT" ;
-  # float XLONG(Time, south_north, west_east) ;
-  # XLONG:FieldType = 104 ;
-  # XLONG:MemoryOrder = "XY " ;
-  # XLONG:description = "LONGITUDE, WEST IS NEGATIVE" ;
-  # XLONG:units = "degree_east" ;
-  # XLONG:stagger = "" ;
+  # double latitude(latitude) ;
+  # latitude:units = "degrees_north" ;
+  # latitude:long_name = "latitude" ;
+  # double longitude(longitude) ;
+  # longitude:units = "degrees_east" ;
+  # longitude:long_name = "longitude" ;
   # Pega index da coordenada de interesse (a.k.a de Galeão)
   # **Lat/Lon**: -22.805151097556816, -43.2566277050208
   lat_ref <- -22.805151097556816
-  long_ref <- -43.2566277050208
-  arq <- nc_open("datasets/wrfout/wrfout_d04_2026-01-24.nc")
+  # Aqui sempre será negativo, então é seguro fazer essa "conversão"
+  long_ref <- -43.2566277050208 + 360
   # Utilizando variáveis XLAT e XLONG procura ids do local
-  xlat <- ncvar_get(nc_arq, "XLAT")
-  xlong <- ncvar_get(nc_arq, "XLONG")
+  lat <- ncvar_get(nc_arq, "latitude")
+  long <- ncvar_get(nc_arq, "longitude")
   
-  xlat_diff <- abs(abs(xlat) - abs(lat_ref))
-  xlong_diff <- abs(abs(xlong) - abs(long_ref))
+  # Abs deve ser usado com cautela em contextos globais
+  lat_diff <- abs(lat - lat_ref)
+  # Longitude não tem negativos aqui!
+  long_diff <- abs(long - long_ref)
 
-  min_lat_id <- which(xlat_diff == min(xlat_diff), arr.ind = TRUE)
+  # Note que é possível dois lugar equidistarem de um ponto
+  # Necessário cautela!
+  min_lat_id <- which(lat_diff == min(lat_diff))
   min_lat_id
-  min_long_id <- which(xlong_diff == min(xlong_diff), arr.ind = TRUE)
+  min_long_id <- which(long_diff == min(long_diff))
   min_long_id
-  which(xlat_diff == min(xlat_diff), arr.ind = TRUE)
   
   # Latitude mínima
   # Coluna 2 é id longitude (para qual o latitude (id 1) é constante)
   # Estritamente falando o id vai ser o mesmo nas duas matrizes!
-  iy <- min_lat_id[1,2]
-  min_lat <- xlat[1,iy]
+  iy <- min_lat_id[1]
+  min_lat <- lat[iy]
   print(paste0("Erro absoluto (lat): ", round(abs(min_lat - lat_ref) * g_medio, 3), "m"))
+  # "Erro absoluto (lat): 6131.56m"
   # Longitude mínima
   # Coluna 1 é id latitude (para qual a longitude (id 2) é constante)
-  ix <- min_long_id[1,1]
-  min_long <- xlong[ix,1]
+  ix <- min_long_id[1]
+  min_long <- long[ix]
   print(paste0("Erro absoluto (long): ", round(abs(min_long - long_ref) * g_medio, 3), "m"))
   
   return(c(ix, iy))
 }
 
-nc_arq <- nc_open("datasets/wrfout/wrfout_d01_2026-01-24.nc")
-get_coord_ids(nc_arq)
-nc_close(nc_arq)
 ## Funções ----
-# GET para uma variável do WRFOUT
-# Por agora abre oa rquiv
+# GET para uma variável do GFS
+# Por agora abre o arquivo
 get_wrf_var <- function(nc_arq, variavel, n_vert = -1) {
   # Assume arq já aberto com nc_open
   coords <- get_coord_ids(nc_arq)

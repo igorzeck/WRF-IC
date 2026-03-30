@@ -64,7 +64,6 @@ get_coord_ids <- function(nc_arq) {
   # **Lat/Lon**: -22.805151097556816, -43.2566277050208
   lat_ref <- -22.805151097556816
   long_ref <- -43.2566277050208
-  arq <- nc_open("datasets/wrfout/wrfout_d04_2026-01-24.nc")
   # Utilizando variáveis XLAT e XLONG procura ids do local
   xlat <- ncvar_get(nc_arq, "XLAT")
   xlong <- ncvar_get(nc_arq, "XLONG")
