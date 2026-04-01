@@ -150,7 +150,7 @@ df_comp %>%
 
 # Aparenta haver uma diferença absoluta constante!
 # Para o d01
-# ... Calcualr
+# ... Calcular
 # 1º C de diferença!
 #### Correlação -----
 df_comp %>% 

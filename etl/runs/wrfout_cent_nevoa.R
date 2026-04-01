@@ -23,7 +23,7 @@ df_metar
 
 ## Tempo ----
 # Abre um NC qualquer para pegar as unidades de tempo
-nc_arq <- nc_open("datasets/wrfout/wrfout_d01_2026-01-24.nc")
+nc_arq <- nc_open("datasets/wrfout/cent/wrfout_d01_2026-01-24.nc")
 
 valores_t <- ncvar_get(nc_arq, "XTIME")
 unid_t <- ncatt_get(nc_arq, "XTIME", "units")$value
@@ -92,7 +92,7 @@ get_coord_ids <- function(nc_arq) {
   return(c(ix, iy))
 }
 
-nc_arq <- nc_open("datasets/wrfout/wrfout_d01_2026-01-24.nc")
+nc_arq <- nc_open("datasets/wrfout/cent/wrfout_d01_2026-01-24.nc")
 get_coord_ids(nc_arq)
 nc_close(nc_arq)
 ## Funções ----
@@ -124,7 +124,7 @@ get_wrf_var <- function(nc_arq, variavel, n_vert = -1) {
 # T2:coordinates = "XLONG XLAT XTIME" ;
 df_var <- tibble(datetime = seq_h)
 for (dom in 1:4) {
-  path_ <- paste0("datasets/wrfout/wrfout_d0", dom, "_2026-01-24.nc")
+  path_ <- paste0("datasets/wrfout/cent/wrfout_d0", dom, "_2026-01-24.nc")
   nc_arq <- nc_open(path_)
   nc_var <- get_wrf_var(nc_arq, "T2")
   df_var <- df_var %>% 
@@ -147,19 +147,16 @@ df_comp %>%
   facet_wrap(~ dom)
 
 # Aparenta haver uma diferença absoluta constante!
-# Para o d01
-# ... Calcualr
-# 1º C de diferença!
 #### Correlação -----
 df_comp %>% 
   group_by(dom) %>% 
   summarise(cor = cor(temperature, nc_var))
 # dom     cor
 # <chr> <dbl>
-# 1 d01   0.851
-# 2 d02   0.799
-# 3 d03   0.802
-# 4 d04   0.732
+# 1 d01   0.880
+# 2 d02   0.899
+# 3 d03   0.877
+# 4 d04   0.854
 # O domínio não aparenta estar centrado no aeroporto de Galeão ou alguma outra coisa ocorre!
 
 ### Pressão na superfície ----
@@ -172,7 +169,7 @@ df_comp %>%
 # PSFC:coordinates = "XLONG XLAT XTIME" ;
 df_var <- tibble(datetime = seq_h)
 for (dom in 1:4) {
-  path_ <- paste0("datasets/wrfout/wrfout_d0", dom, "_2026-01-24.nc")
+  path_ <- paste0("datasets/wrfout/cent/wrfout_d0", dom, "_2026-01-24.nc")
   nc_arq <- nc_open(path_)
   nc_var <- get_wrf_var(nc_arq, "PSFC")
   df_var <- df_var %>% 
@@ -244,7 +241,7 @@ get_coord_ids(nc_open("datasets/wrfout/wrfout_d04_2026-01-24.nc"))
 
 df_var <- tibble(datetime = seq_h)
 for (dom in 1:4) {
-  path_ <- paste0("datasets/wrfout/wrfout_d0", dom, "_2026-01-24.nc")
+  path_ <- paste0("datasets/wrfout/cent/wrfout_d0", dom, "_2026-01-24.nc")
   nc_arq <- nc_open(path_)
   nc_var_u <- get_wrf_var(nc_arq, "U", n_vert = 1)
   nc_var_v <- get_wrf_var(nc_arq, "V", n_vert = 1)
@@ -306,7 +303,7 @@ df_comp %>%
 # TODO: TBA
 df_var <- tibble(datetime = seq_h)
 for (dom in 1:4) {
-  path_ <- paste0("datasets/wrfout/wrfout_d0", dom, "_2026-01-24.nc")
+  path_ <- paste0("datasets/wrfout/cent/wrfout_d0", dom, "_2026-01-24.nc")
   nc_arq <- nc_open(path_)
   nc_var_u <- get_wrf_var(nc_arq, "U", n_vert = 1)
   nc_var_v <- get_wrf_var(nc_arq, "V", n_vert = 1)
@@ -354,7 +351,7 @@ df_comp %>%
 # AFWA_VIS:coordinates = "XLONG XLAT XTIME" ;
 df_var <- tibble(datetime = seq_h)
 for (dom in 1:4) {
-  path_ <- paste0("datasets/wrfout/wrfout_d0", dom, "_2026-01-24.nc")
+  path_ <- paste0("datasets/wrfout/cent/wrfout_d0", dom, "_2026-01-24.nc")
   nc_arq <- nc_open(path_)
   nc_var <- get_wrf_var(nc_arq, "AFWA_VIS")
   # Normalização min-max (para teto de 1e4)
