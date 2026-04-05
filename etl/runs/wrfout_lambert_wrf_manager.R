@@ -1,5 +1,5 @@
 # Comparação entre dados simulados WRFOUT com METARs usando configurações do WRF Manager
-# NOTE: Projeção mercator
+# NOTE: Acurácia ok, seria devido a projeção mercator?
 # RUN: 
 #  Data: 2026-01-24 (00:00 - 12:00)
 #  Local: SBGL
@@ -23,7 +23,7 @@ df_metar
 
 ## Tempo ----
 # Abre um NC qualquer para pegar as unidades de tempo
-nc_arq <- nc_open("datasets/wrfout/wrf_manager_like_lambert/wrfout_d01_2026-01-24.nc")
+nc_arq <- nc_open("datasets/wrfout/wrf_manager_like/wrfout_d01_2026-01-24.nc")
 
 valores_t <- ncvar_get(nc_arq, "XTIME")
 unid_t <- ncatt_get(nc_arq, "XTIME", "units")$value
@@ -95,7 +95,7 @@ get_coord_ids <- function(nc_arq) {
   return(c(ix, iy))
 }
 
-nc_arq <- nc_open("datasets/wrfout/wrf_manager_like_lambert/wrfout_d01_2026-01-24.nc")
+nc_arq <- nc_open("datasets/wrfout/wrf_manager_like/wrfout_d01_2026-01-24.nc")
 get_coord_ids(nc_arq)
 nc_close(nc_arq)
 ## Funções ----
@@ -127,7 +127,7 @@ get_wrf_var <- function(nc_arq, variavel, n_vert = -1) {
 # T2:coordinates = "XLONG XLAT XTIME" ;
 df_var <- tibble(datetime = c(seq_h))
 for (dom in 1:4) {
-  path_ <- paste0("datasets/wrfout/wrf_manager_like_lambert/wrfout_d0", dom, "_2026-01-24.nc")
+  path_ <- paste0("datasets/wrfout/wrf_manager_like/wrfout_d0", dom, "_2026-01-24.nc")
   nc_arq <- nc_open(path_)
   nc_var <- get_wrf_var(nc_arq, "T2")
   df_var <- df_var %>% 
@@ -160,11 +160,11 @@ df_comp %>%
 # A tibble: 4 × 2
 # dom     cor
 # <chr> <dbl>
-#   1 d01   0.858
-# 2 d02   0.697
-# 3 d03   0.836
-# 4 d04   0.779
-# Acurácia piorou!!!
+#   1 d01   0.862
+# 2 d02   0.829
+# 3 d03   0.820
+# 4 d04   0.839
+# As melhores são para o domínio 1...
 
 ### Pressão na superfície ----
 # float PSFC(Time, south_north, west_east) ;
@@ -176,7 +176,7 @@ df_comp %>%
 # PSFC:coordinates = "XLONG XLAT XTIME" ;
 df_var <- tibble(datetime = c(seq_h))
 for (dom in 1:4) {
-  path_ <- paste0("datasets/wrfout/wrf_manager_like_lambert/wrfout_d0", dom, "_2026-01-24.nc")
+  path_ <- paste0("datasets/wrfout/wrf_manager_like/wrfout_d0", dom, "_2026-01-24.nc")
   nc_arq <- nc_open(path_)
   nc_var <- get_wrf_var(nc_arq, "PSFC")
   df_var <- df_var %>% 
@@ -206,10 +206,11 @@ df_comp %>%
 # A tibble: 4 × 2
 # dom     cor
 # <chr> <dbl>
-#   1 d01   0.927
-# 2 d02   0.924
-# 3 d03   0.923
-# 4 d04   0.868
+#   1 d01   0.926
+# 2 d02   0.926
+# 3 d03   0.928
+# 4 d04   0.865
+# Exceto pelo domínio 4 todo acima de 90%!
 
 ### Velocidade do vento ----
 # float U(Time, bottom_top, south_north, west_east_stag) ;
@@ -236,7 +237,7 @@ df_comp %>%
 
 df_var <- tibble(datetime = c(seq_h))
 for (dom in 1:4) {
-  path_ <- paste0("datasets/wrfout/wrf_manager_like_lambert/wrfout_d0", dom, "_2026-01-24.nc")
+  path_ <- paste0("datasets/wrfout/wrf_manager_like/wrfout_d0", dom, "_2026-01-24.nc")
   nc_arq <- nc_open(path_)
   nc_var_u <- get_wrf_var(nc_arq, "U", n_vert = 1)
   nc_var_v <- get_wrf_var(nc_arq, "V", n_vert = 1)
@@ -299,7 +300,7 @@ df_comp %>%
 # TODO: TBA
 df_var <- tibble(datetime = c(seq_h))
 for (dom in 1:4) {
-  path_ <- paste0("datasets/wrfout/wrf_manager_like_lambert/wrfout_d0", dom, "_2026-01-24.nc")
+  path_ <- paste0("datasets/wrfout/wrf_manager_like/wrfout_d0", dom, "_2026-01-24.nc")
   nc_arq <- nc_open(path_)
   nc_var_u <- get_wrf_var(nc_arq, "U", n_vert = 1)
   nc_var_v <- get_wrf_var(nc_arq, "V", n_vert = 1)
@@ -332,11 +333,11 @@ df_comp %>%
 # A tibble: 4 × 2
 # dom      cor
 # <chr>  <dbl>
-#   1 d01   0.0178
-# 2 d02   0.808 
-# 3 d03   0.635 
-# 4 d04   0.604 
-# A melor melhora de resolução foi consistentemente a do vento!
+# 1 d01   -0.160
+# 2 d02    0.533
+# 3 d03    0.668
+# 4 d04    0.598
+
 ### AFWA_VIS ----
 # float AFWA_VIS(Time, south_north, west_east) ;
 # AFWA_VIS:FieldType = 104 ;
@@ -347,7 +348,7 @@ df_comp %>%
 # AFWA_VIS:coordinates = "XLONG XLAT XTIME" ;
 df_var <- tibble(datetime = c(seq_h))
 for (dom in 1:4) {
-  path_ <- paste0("datasets/wrfout/wrf_manager_like_lambert/wrfout_d0", dom, "_2026-01-24.nc")
+  path_ <- paste0("datasets/wrfout/wrf_manager_like/wrfout_d0", dom, "_2026-01-24.nc")
   nc_arq <- nc_open(path_)
   nc_var <- get_wrf_var(nc_arq, "AFWA_VIS")
   # Normalização min-max (para teto de 1e4)
@@ -376,10 +377,10 @@ df_comp %>%
   group_by(dom) %>% 
   summarise(cor = cor(visibility, nc_var))
 # A tibble: 4 × 2
-# dom     cor
-# <chr> <dbl>
-#   1 d01   0.145
-# 2 d02   0.236
-# 3 d03   0.135
-# 4 d04   0.179
+# dom      cor
+# <chr>  <dbl>
+#   1 d01   0.138 
+# 2 d02   0.162 
+# 3 d03   0.0569
+# 4 d04   0.149
 # Igualmente imprecisos
