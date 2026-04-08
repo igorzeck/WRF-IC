@@ -1,0 +1,6 @@
+# Metar
+# Domínios para análise
+# Prefixo do arquivo
+# Sufixo do arquivo
+metar:prefix:dom:suffix
+datasets/metar_SBGL_2026.csv:/home/rf/WD/WRF/test/em_real/wrfout_:1,2,3,4:_2026-04-04.nc

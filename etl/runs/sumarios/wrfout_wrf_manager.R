@@ -109,7 +109,6 @@ nc_close(nc_arq)
 get_wrf_var <- function(nc_arq, variavel, n_vert = -1) {
   # Assume arq já aberto com nc_open
   coords <- get_coord_ids(nc_arq)
-  variavel = "T2"
   # Pega variável relevante e retorna seu valor para todos os horários na coordenada relevante
   nc_var <- ncvar_get(nc_arq, variavel)
   # Dimensão geralmente: LAT, LONG, BOTTOM_TOP, TIME
@@ -156,6 +155,91 @@ df_comp %>%
 # cor
 # <dbl>
 #   1 0.981
+
+### Pressão na superfície ----
+# float PSFC(Time, south_north, west_east) ;
+# PSFC:FieldType = 104 ;
+# PSFC:MemoryOrder = "XY " ;
+# PSFC:description = "SFC PRESSURE" ;
+# PSFC:units = "Pa" ;
+# PSFC:stagger = "" ;
+# PSFC:coordinates = "XLONG XLAT XTIME" ;
+df_var <- tibble(datetime = seq_h)
+path_ <- paste0("datasets/wrfout/wrf_manager/wrfout_2025-06-04.nc")
+nc_arq <- nc_open(path_)
+nc_var <- get_wrf_var(nc_arq, "PSFC")
+df_var <- df_var %>% 
+  mutate("nc_var" = nc_var / 1e2)
+nc_close(nc_arq)
+
+df_comp <- left_join(df_var, df_metar, by = "datetime")
+#### Gráfico ----
+df_comp %>% 
+  ggplot(aes(x = datetime)) +
+  geom_line(aes(y = pressure)) +
+  geom_line(aes(y = nc_var), color = "green")
+
+#### Correlação -----
+df_comp %>% 
+  summarise(cor = cor(pressure, nc_var))
+# A tibble: 1 × 1
+# cor
+# <dbl>
+#   1 0.866 - OK
+
+### Velocidade do vento ----
+# float U(Time, bottom_top, south_north, west_east_stag) ;
+# U:FieldType = 104 ;
+# U:MemoryOrder = "XYZ" ;
+# U:description = "x-wind component" ;
+# U:units = "m s-1" ;
+# U:stagger = "X" ;
+# U:coordinates = "XLONG_U XLAT_U XTIME" ;
+# float V(Time, bottom_top, south_north_stag, west_east) ;
+# V:FieldType = 104 ;
+# V:MemoryOrder = "XYZ" ;
+# V:description = "y-wind component" ;
+# V:units = "m s-1" ;
+# V:stagger = "Y" ;
+# V:coordinates = "XLONG_V XLAT_V XTIME" ;
+# float W(Time, bottom_top_stag, south_north, west_east) ;
+# W:FieldType = 104 ;
+# W:MemoryOrder = "XYZ" ;
+# W:description = "z-wind component" ;
+# W:units = "m s-1" ;
+# W:stagger = "Z" ;
+# W:coordinates = "XLONG XLAT XTIME" ;
+df_var <- tibble(datetime = c(seq_h))
+
+path_ = paste0("datasets/wrfout/wrf_manager/wrfout_2025-06-04.nc")
+nc_arq <- nc_open(path_)
+nc_var_u <- get_wrf_var(nc_arq, "U", n_vert = 1)
+nc_var_v <- get_wrf_var(nc_arq, "V", n_vert = 1)
+nc_var_w <- get_wrf_var(nc_arq, "W", n_vert = 1)
+
+df_var <- df_var %>% 
+  mutate(nc_var = sqrt(nc_var_u ** 2 + nc_var_v ** 2 + nc_var_w ** 2))
+nc_close(nc_arq)
+
+df_comp <- left_join(df_var, df_metar, by = "datetime")
+
+#### Gráfico ----
+df_comp %>% 
+  ggplot(aes(x = datetime)) +
+  geom_line(aes(y = wind_speed)) +
+  geom_line(aes(y = nc_var), color = "green")
+
+#### Correlação -----
+df_comp %>% 
+  summarise(cor = cor(wind_speed, nc_var))
+# A tibble: 4 × 2
+# dom     cor
+# <chr> <dbl>
+#   1 d01   0.548
+# 2 d02   0.374
+# 3 d03   0.689
+# 4 d04   0.682
+# Acurácia ok
 
 ### AFWA_VIS ----
 # float AFWA_VIS(Time, south_north, west_east) ;

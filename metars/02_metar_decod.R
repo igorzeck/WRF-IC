@@ -1,4 +1,6 @@
 # Exploração dos CSVs dos METARs do ERA5 (em busca de mais variávies) ---
+# Por agora se retirou os views, mas ainda se pode olhar o script
+# Passo a passo pelos resultados
 ## Setup ---
 if (!require("pmetar")) install.packages("pmetar", dependencies = TRUE)
 if (!require("measurements")) install.packages("measurements", dependencies = TRUE)
@@ -78,8 +80,7 @@ for (arq in arqs) {
   # Ele aparenta conter texto em alguns casos
   df %>% 
     group_by(visibility) %>% 
-    summarise(n = n()) %>% 
-    view()
+    summarise(n = n())
   
   # Para CAVOK e 9999 se mantém como 10.000 a visibilidade
   # De acordo com o DECEA (https://ajuda.decea.mil.br/base-de-conhecimento/como-decodificar-o-metar-e-o-speci/)
@@ -113,8 +114,7 @@ for (arq in arqs) {
   # Ele aparenta conter texto em alguns casos
   # Por agora pega so a primeira categoria
   df %>% 
-    distinct(cloud_coverage) %>% 
-    view()
+    distinct(cloud_coverage)
   
   # lógica:
   # 1. Separa para pegar primeira aprte antes do ';'
@@ -138,8 +138,7 @@ for (arq in arqs) {
     filter(is.na(altura_nuvem)) %>% 
     group_by(cloud_coverage) %>% 
     group_by(visibility, cloud_coverage) %>% 
-    summarise(n = n()) %>% 
-    view()
+    summarise(n = n())
   # Em geral, aparenta ser o caso de que
   # quando não há nuvens ele pode estar com o campo
   # vazio ou "No (nil) significant cloud"
@@ -147,8 +146,7 @@ for (arq in arqs) {
     filter(is.na(altura_nuvem)) %>% 
     group_by(cloud_coverage) %>% 
     group_by(weather_information, cloud_coverage) %>% 
-    summarise(n = n()) %>% 
-    view()
+    summarise(n = n())
   # Por agora, quando o campo estiver vazio ou com
   # No (nil) signifcant cloud, ele receberá um NA
   df %>% 
@@ -190,8 +188,7 @@ for (arq in arqs) {
   # Ajudaria a orientação direcional
   df %>% 
     group_by(runway_visibility) %>% 
-    summarise(n = n()) %>% 
-    view()
+    summarise(n = n())
   # Ignora, já que a gigantesca maioria é NAs
   
   df <- df %>% 
