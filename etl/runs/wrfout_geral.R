@@ -115,7 +115,7 @@ get_wrf_var <- function(nc_arq, variavel, n_vert = -1) {
 
 ## Análise ----
 # Cria arquivo com sumário das análises
-write('Sumario',file=paste0('etl/runs/wrfout',comp_info$suffix,'sumario.txt'),append=FALSE)
+write('Sumario',file=paste0('etl/runs/wrfout',comp_info$suffix,'.sumario.txt'),append=FALSE)
 
 ### Temperatura a 2m ----
 # float T2(Time, south_north, west_east) ;
