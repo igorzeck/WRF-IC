@@ -24,7 +24,7 @@ df_metar
 
 ## Tempo ----
 # Abre um NC qualquer para pegar as unidades de tempo
-nc_arq <- nc_open(paste0(comp_info$prefix,'d0',doms[1],comp_info$suffix))
+nc_arq <- nc_open(paste0(comp_info$prefix,'d0',doms[1], comp_info$suffix))
 
 valores_t <- ncvar_get(nc_arq, "XTIME")
 unid_t <- ncatt_get(nc_arq, "XTIME", "units")$value
@@ -96,7 +96,6 @@ get_coord_ids <- function(nc_arq) {
   return(c(ix, iy))
 }
 
-## Funções ----
 # GET para uma variável do WRFOUT
 # Por agora abre oa rquiv
 get_wrf_var <- function(nc_arq, variavel, n_vert = -1) {
@@ -115,7 +114,7 @@ get_wrf_var <- function(nc_arq, variavel, n_vert = -1) {
 
 ## Análise ----
 # Cria arquivo com sumário das análises
-write('Sumario',file=paste0('etl/runs/wrfout',comp_info$suffix,'.sumario.txt'),append=FALSE)
+write('Sumario',file=paste0('etl/runs/sumarios/',paste0(comp_info$desc, comp_info$suffix),'.sumario.txt'),append=FALSE)
 
 ### Temperatura a 2m ----
 # float T2(Time, south_north, west_east) ;
@@ -127,7 +126,7 @@ write('Sumario',file=paste0('etl/runs/wrfout',comp_info$suffix,'.sumario.txt'),a
 # T2:coordinates = "XLONG XLAT XTIME" ;
 df_var <- tibble(datetime = c(seq_h))
 for (dom in doms) {
-  path_ = paste0(comp_info$prefix,"d0",dom,comp_info$suffix)
+  path_ = paste0(comp_info$prefix,"d0",dom, comp_info$suffix)
   nc_arq <- nc_open(path_)
   nc_var <- get_wrf_var(nc_arq, "T2")
   df_var <- df_var %>% 
@@ -156,16 +155,7 @@ df_comp %>%
   group_by(dom) %>% 
   summarise(cor = cor(temperature, nc_var)) %>% 
   kable(caption = "T2", format = "latex") %>% 
-  write(file=paste0('etl/runs/wrfout',comp_info$suffix,'sumario.txt'),append=TRUE)
-
-# A tibble: 4 × 2
-# dom     cor
-# <chr> <dbl>
-#   1 d01   0.982 - OK
-# 2 d02   0.977
-# 3 d03   0.979
-# 4 d04   0.981
-# Acurácia alta! quele dia era anômalo mesmo!
+  write(file=paste0('etl/runs/sumarios/', paste0(comp_info$desc, comp_info$suffix),'.sumario.txt'),append=TRUE)
 
 ### Pressão na superfície ----
 # float PSFC(Time, south_north, west_east) ;
@@ -177,7 +167,7 @@ df_comp %>%
 # PSFC:coordinates = "XLONG XLAT XTIME" ;
 df_var <- tibble(datetime = c(seq_h))
 for (dom in 1:4) {
-  path_ = paste0(comp_info$prefix,"d0",dom,comp_info$suffix)
+  path_ = paste0(comp_info$prefix,"d0",dom, comp_info$suffix)
   nc_arq <- nc_open(path_)
   nc_var <- get_wrf_var(nc_arq, "PSFC")
   df_var <- df_var %>% 
@@ -205,7 +195,7 @@ df_comp %>%
   group_by(dom) %>% 
   summarise(cor = cor(pressure, nc_var)) %>% 
   kable(caption = "PSFC", format = "latex") %>% 
-  write(file=paste0('etl/runs/wrfout',comp_info$suffix,'sumario.txt'),append=TRUE)
+  write(file=paste0('etl/runs/sumarios/',paste0(comp_info$desc, comp_info$suffix),'.sumario.txt'),append=TRUE)
 
 
 ### Velocidade do vento ----
@@ -232,7 +222,7 @@ df_comp %>%
 # W:coordinates = "XLONG XLAT XTIME" ;
 df_var <- tibble(datetime = c(seq_h))
 for (dom in 1:4) {
-  path_ = paste0(comp_info$prefix,"d0",dom,comp_info$suffix)
+  path_ = paste0(comp_info$prefix,"d0",dom, comp_info$suffix)
   nc_arq <- nc_open(path_)
   nc_var_u <- get_wrf_var(nc_arq, "U", n_vert = 1)
   nc_var_v <- get_wrf_var(nc_arq, "V", n_vert = 1)
@@ -262,7 +252,7 @@ df_comp %>%
   group_by(dom) %>% 
   summarise(cor = cor(wind_speed, nc_var)) %>% 
   kable(caption = "Wind_Speed", format = "latex") %>% 
-  write(file=paste0('etl/runs/wrfout',comp_info$suffix,'sumario.txt'),append=TRUE)
+  write(file=paste0('etl/runs/sumarios/',paste0(comp_info$desc, comp_info$suffix),'.sumario.txt'),append=TRUE)
 
 ### AFWA_VIS ----
 # float AFWA_VIS(Time, south_north, west_east) ;
@@ -274,7 +264,7 @@ df_comp %>%
 # AFWA_VIS:coordinates = "XLONG XLAT XTIME" ;
 df_var <- tibble(datetime = c(seq_h))
 for (dom in 1:4) {
-  path_ = paste0(comp_info$prefix,"d0",dom,comp_info$suffix)
+  path_ = paste0(comp_info$prefix,"d0",dom, comp_info$suffix)
   nc_arq <- nc_open(path_)
   nc_var <- get_wrf_var(nc_arq, "AFWA_VIS")
   # Normalização min-max (para teto de 1e4)
@@ -303,4 +293,5 @@ df_comp %>%
   group_by(dom) %>% 
   summarise(cor = cor(visibility, nc_var)) %>% 
   kable(caption = "AFWA_VIS", format = "latex") %>% 
-  write(file=paste0('etl/runs/wrfout',comp_info$suffix,'sumarios/sumario.txt'),append=TRUE)
+  write(file=paste0('etl/runs/sumarios/',paste0(comp_info$desc, comp_info$suffix),'.sumario.txt'),append=TRUE)
+
