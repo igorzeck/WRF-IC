@@ -1,0 +1,73 @@
+Sumario
+\begin{table}
+
+\caption{T2}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+dom & cor\\
+\hline
+d01 & 0.9337815\\
+\hline
+d02 & 0.9429675\\
+\hline
+d03 & 0.9367886\\
+\hline
+d04 & 0.9214999\\
+\hline
+\end{tabular}
+\end{table}
+\begin{table}
+
+\caption{PSFC}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+dom & cor\\
+\hline
+d01 & 0.9082839\\
+\hline
+d02 & 0.9050747\\
+\hline
+d03 & 0.8996838\\
+\hline
+d04 & 0.8744976\\
+\hline
+\end{tabular}
+\end{table}
+\begin{table}
+
+\caption{Wind_Speed}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+dom & cor\\
+\hline
+d01 & 0.9034384\\
+\hline
+d02 & 0.8038128\\
+\hline
+d03 & 0.8276456\\
+\hline
+d04 & 0.8684039\\
+\hline
+\end{tabular}
+\end{table}
+\begin{table}
+
+\caption{AFWA_VIS}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+dom & cor\\
+\hline
+d01 & NA\\
+\hline
+d02 & NA\\
+\hline
+d03 & NA\\
+\hline
+d04 & NA\\
+\hline
+\end{tabular}
+\end{table}

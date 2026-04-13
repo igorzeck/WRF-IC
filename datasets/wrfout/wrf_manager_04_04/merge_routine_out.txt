@@ -1,0 +1,801 @@
+
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_U!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLAT_V!
+cdi  warning (cdf_set_var): Inconsistent variable definition for XLONG_V!
+cdi  warning (cdf_check_variables): Unsupported data type (char/string), skipped variable Times!
+cdi  warning (cdfInqContents): Coordinates variable XTIME can't be assigned!

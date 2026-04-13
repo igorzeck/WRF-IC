@@ -25,6 +25,7 @@ df_metar
 ## Tempo ----
 # Abre um NC qualquer para pegar as unidades de tempo
 nc_arq <- nc_open(paste0(comp_info$prefix,'d0',doms[1], comp_info$suffix))
+"datasets/wrfout/wrf_manager_04_04/wrfout_d01_2026-04-04.nc"
 
 valores_t <- ncvar_get(nc_arq, "XTIME")
 unid_t <- ncatt_get(nc_arq, "XTIME", "units")$value

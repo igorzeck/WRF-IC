@@ -102,5 +102,7 @@ beta_marine <- 0.08 * (rh_sfc**3)
 beta_fog <- if_else(rh_sfc > 0.85, 0.01 * exp(53.0 * (rh_sfc - 0.85)), 0.0)
 beta_total <- beta_col * growth + beta_marine + beta_fog
 vis_wrf <- clamp(3.5 / beta_total, 0.0, 20.0)
+
+# 0.5 porque é de 0 a 1e4, efetivamente o mesmo que fazer um min-max aqui
 vis_wrf * 0.5e3
 nc_close(nc_arq)
