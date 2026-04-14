@@ -1,5 +1,6 @@
 # Script para calcular visibilidade por meio dos dados do WRF
 # Versão em R
+# TODO: Ver o porque pode sair NAs aqui!
 # Setup ----
 #TODO: Mover isso aqui para wrfout_source como uma série de funções
 source("etl/wrfout_source.R")

@@ -71,3 +71,39 @@ d04 & NA\\
 \hline
 \end{tabular}
 \end{table}
+\begin{table}
+
+\caption{AFWA_VIS}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+dom & cor\\
+\hline
+d01 & NA\\
+\hline
+d02 & NA\\
+\hline
+d03 & NA\\
+\hline
+d04 & NA\\
+\hline
+\end{tabular}
+\end{table}
+\begin{table}
+
+\caption{Koschmieder_vis}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+dom & cor\\
+\hline
+d01 & NA\\
+\hline
+d02 & NA\\
+\hline
+d03 & NA\\
+\hline
+d04 & NA\\
+\hline
+\end{tabular}
+\end{table}

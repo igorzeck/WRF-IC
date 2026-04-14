@@ -356,7 +356,7 @@ for (dom in 1:4) {
   nc_var <- get_wrf_var(nc_arq, "AFWA_VIS")
   # Normalização min-max (para teto de 1e4)
   df_var <- df_var %>% 
-    mutate("{paste0('d0',dom)}" :=  (max(nc_var) - nc_var)/(max(nc_var) - min(nc_var)) * 1e4)
+    mutate("{paste0('d0',dom)}" :=  (nc_var - min(nc_var))/(max(nc_var) - min(nc_var)) * 1e4)
   nc_close(nc_arq)
 }
 
