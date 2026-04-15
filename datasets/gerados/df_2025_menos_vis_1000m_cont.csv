@@ -1,0 +1,5 @@
+datetime,wind_speed,wind_direction,temperature,dew_point,pressure,visibility,weather_information,categ_nuvem,altura_nuvem
+2025-07-27T10:00:00Z,1.5433341,100,17,16,1018,600,Mist (French: Brume),Scattered,60.96
+2025-07-27T11:00:00Z,1.5433341,50,18,17,1018,900,Fog,Overcast,60.96
+2025-07-27T12:00:00Z,1.0288894,50,18,17,1019,500,Fog,No,0
+2025-07-27T12:35:00Z,1.5433341,170,18,17,1019,800,Mist (French: Brume),Overcast,60.96

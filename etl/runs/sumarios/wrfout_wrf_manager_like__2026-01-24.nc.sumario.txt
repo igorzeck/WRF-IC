@@ -1,0 +1,91 @@
+Sumario
+\begin{table}
+
+\caption{T2}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+dom & cor\\
+\hline
+d01 & 0.8617611\\
+\hline
+d02 & 0.8285857\\
+\hline
+d03 & 0.8202517\\
+\hline
+d04 & 0.8388957\\
+\hline
+\end{tabular}
+\end{table}
+\begin{table}
+
+\caption{PSFC}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+dom & cor\\
+\hline
+d01 & 0.9264254\\
+\hline
+d02 & 0.9264003\\
+\hline
+d03 & 0.9276227\\
+\hline
+d04 & 0.8646192\\
+\hline
+\end{tabular}
+\end{table}
+\begin{table}
+
+\caption{Wind_Speed}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+dom & cor\\
+\hline
+d01 & -0.1106435\\
+\hline
+d02 & 0.4284569\\
+\hline
+d03 & 0.3624349\\
+\hline
+d04 & 0.4495874\\
+\hline
+\end{tabular}
+\end{table}
+\begin{table}
+
+\caption{AFWA_VIS}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+dom & cor\\
+\hline
+d01 & -0.1379566\\
+\hline
+d02 & -0.1624503\\
+\hline
+d03 & -0.0569339\\
+\hline
+d04 & -0.1492922\\
+\hline
+\end{tabular}
+\end{table}
+\begin{table}
+
+\caption{Koschmieder_vis}
+\centering
+\begin{tabular}[t]{l|r}
+\hline
+dom & cor\\
+\hline
+d01 & 0.2317005\\
+\hline
+d02 & -0.0295294\\
+\hline
+d03 & -0.1122726\\
+\hline
+d04 & -0.1728802\\
+\hline
+\end{tabular}
+\end{table}

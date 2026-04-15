@@ -1,10 +1,10 @@
 # Script para achar períodos com baixa visibilidade para um dado METAR
 # Setup ----
-library(dplyr)
+library(tidyverse)
 library(lubridate)
 library(ggplot2)
 
-df_metar <- read_csv("datasets/metar_SBGL_2026.csv")
+df_metar <- read_csv("datasets/metar_SBGL_2025.csv")
 df_metar
 
 head(df_metar)
@@ -34,10 +34,9 @@ achar_p_mais_longo <- function(vis_ref) {
   longest_period
 }
 
-df_p <- achar_p_mais_longo(7000)
+df_p <- achar_p_mais_longo(1000)
 df_p
 max(df_p$datetime) - min(df_p$datetime)
-# 16h de diferença
 
 # Graficamente ----
 df_p %>% 
@@ -51,4 +50,4 @@ min_vis <- min(df_p$visibility)
 paste0("Min: ", min_vis, "m")
 paste0("Range: ", max_vis - min_vis, "m")
 # Export ----
-write_csv(df_p, "datasets/gerados/df_2026_menos_vis_7000m_cont.csv")
+write_csv(df_p, "datasets/gerados/df_2025_menos_vis_1000m_cont.csv")

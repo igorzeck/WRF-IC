@@ -3,4 +3,4 @@
 # Prefixo do arquivo
 # Sufixo do arquivo
 metar:prefix:dom:suffix:desc
-datasets/metar_SBGL_2026.csv:datasets/wrfout/wrf_manager_04_04/wrfout_:1,2,3,4:_2026-04-04.nc:wrfout_wef_manager_
+datasets/metar_SBGL_2025.csv:datasets/wrfout/wrf_low_vis_2025/wrfout_:1,2,3,4:_2025-07-27.nc:wrfout_2025_low_vis

@@ -107,3 +107,4 @@ vis_wrf <- clamp(3.5 / beta_total, 0.0, 20.0)
 # 0.5 porque é de 0 a 1e4, efetivamente o mesmo que fazer um min-max aqui
 vis_wrf * 0.5e3
 nc_close(nc_arq)
+# TODO: Testar sem o cap de 20km talvez?

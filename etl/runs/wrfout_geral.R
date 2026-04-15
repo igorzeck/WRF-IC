@@ -31,7 +31,6 @@ unid_t
 seq_h <- get_seq_h(nc_arq, multiplo = 60)
 seq_h
 nc_close(nc_arq)
-
 ## Análise ----
 # Cria arquivo com sumário das análises
 write('Sumario',file=paste0('etl/runs/sumarios/',paste0(comp_info$desc, comp_info$suffix),'.sumario.txt'),append=FALSE)
@@ -255,4 +254,6 @@ df_comp %>%
   summarise(cor = cor(visibility, nc_var)) %>% 
   kable(caption = "Koschmieder_vis", format = "latex") %>% 
   write(file=paste0('etl/runs/sumarios/',paste0(comp_info$desc, comp_info$suffix),'.sumario.txt'),append=TRUE)
-# Impossível fazer correlação, mas em geral foram perfeitos
+# NOTE: Impossível fazer correlação quando todos os valores são iguais
+# Em geral: 2 vezes mais preciso que o AFWA, mas ainda bem impreciso!
+# TODO: OLhar visibilidade como sendo valor binário!
