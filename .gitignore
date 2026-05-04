@@ -5,6 +5,7 @@
 .conda
 .testes
 *.nc
+*.png
 *.grib*
 !datasets/*.csv
 !.gitignore
