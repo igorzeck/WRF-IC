@@ -4,7 +4,9 @@ library(tidyverse)
 library(lubridate)
 library(ggplot2)
 
-df_metar <- read_csv("datasets/metar_SBGL_2025.csv")
+ano <- readline(prompt = "Ano: ")
+
+df_metar <- read_csv(paste0("datasets/metar_SBGL_",ano,".csv"))
 df_metar
 
 head(df_metar)
@@ -50,4 +52,4 @@ min_vis <- min(df_p$visibility)
 paste0("Min: ", min_vis, "m")
 paste0("Range: ", max_vis - min_vis, "m")
 # Export ----
-write_csv(df_p, "datasets/gerados/df_2025_menos_vis_1000m_cont.csv")
+write_csv(df_p, paste0("datasets/gerados/df_",ano,"_menos_vis_1000m_cont.csv"))

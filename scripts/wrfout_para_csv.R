@@ -1,6 +1,7 @@
 # Script de conversão de arquivos WRFOUT (NetCDF4) para CSV
 # De antemão os arquios NetCDF tem que estar mergidos em um único arquivo
 # TODO: Versão que itera sobre diversos arquivos
+# TODO: Para diversas variáveis
 # Setup ----
 library(tidyverse)
 library(ncdf4)
@@ -9,7 +10,8 @@ library(janitor)
 
 ## Tempo ----
 # Abre um NC qualquer para pegar as unidades de tempo
-nc_arq <- nc_open("datasets/wrfout/wrf_manager/wrfout_2025-06-04.nc")
+# nc_arq <- nc_open("datasets/wrfout/wrf_manager/wrfout_2025-06-04.nc")
+nc_arq <- nc_open("/home/rf/WD/DATA/GFS_FINAL/out_1/wrfout_d01_2025-07-27.nc")
 
 valores_t <- ncvar_get(nc_arq, "XTIME")
 unid_t <- ncatt_get(nc_arq, "XTIME", "units")$value
@@ -81,8 +83,6 @@ get_coord_ids <- function(nc_arq) {
   return(c(ix, iy))
 }
 
-nc_arq <- nc_open("datasets/wrfout/wrf_manager/wrfout_2025-06-04.nc")
-nc_close(nc_arq)
 ## Funções ----
 # GET para uma variável do WRFOUT
 # Por agora abre oa rquiv
@@ -101,7 +101,7 @@ get_wrf_var <- function(nc_arq, variavel, n_vert = -1) {
 }
 
 # Conversão ----
-nc_arq <- nc_open("datasets/wrfout/wrf_manager/wrfout_2025-06-04.nc")
+nc_arq <- nc_open("/home/rf/WD/DATA/GFS_FINAL/out_1/wrfout_d03_2025-07-27.nc")
 tibble_csv = tibble(
   datetime = c(seq_h)  # Necessário concatenar os valores para não irem como listas
 )
@@ -134,5 +134,5 @@ glimpse(tibble_csv)
 tibble_csv
 tibble_csv <- tibble_csv %>% 
   clean_names()
-write_csv(tibble_csv, "datasets/wrfout_2025-06-04.csv")
+write_csv(tibble_csv, "datasets/wrfout_d03_2026-07.csv")
 
