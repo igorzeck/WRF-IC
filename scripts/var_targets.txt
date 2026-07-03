@@ -1,0 +1,32 @@
+Dew point temperature (HTGL)
+Geopotential height (0DEG)
+Geopotential height (CEIL)
+Geopotential height (HTFL)
+Geopotential height (SFC)
+High level cloud cover
+Low level cloud cover
+Mean sea level pressure (ETA model)
+Mid level cloud cover
+Parcel lifted index (to 500 hPa)
+Precipitable water
+Pressure
+Probability of precipitation
+Relative humidity (HTGL)
+Relative humidity (HYBL)
+Specific humidity (HTGL)
+Specific humidity (HYBL)
+Specific humidity (SPDY)
+Surface lifted index
+Surface roughness
+Temperature (HTGL)
+Temperature (SFC)
+Temperature - sea Temperature
+Total cloud cover
+Total column-integrated cloud water
+Water temperature
+u-component of wind (HTGL)
+u-component of wind (SPDY)
+v-component of wind (HTGL)
+v-component of wind (SPDY)
+wind_angle
+wind_speed
