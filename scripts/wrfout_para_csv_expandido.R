@@ -9,13 +9,17 @@ library(janitor)
 
 # Config ----
 # Coordenada de referência (Lat, Lon)
-LAT_REF  <- -23.993138612371308
-LONG_REF <- -46.3068174272036
+# Santos
+# LAT_REF  <- -23.993138612371308
+# LONG_REF <- -46.3068174272036
+# Galeão
+LAT_REF  <- -22.805151097556816
+LONG_REF <- -43.2566277050208
 
-ARQ_TEMPO <- "/home/rf/WD/DATA/GFS_FINAL/out_1/wrfout_d01_2025-07-27.nc"
-ARQ_DADOS <- "/home/rf/WD/DATA/GFS_FINAL/out_1/wrfout_d01_2025-07-27.nc"
+ARQ_TEMPO <- "/home/rf/WD/WRF/test/em_real/jan_fev_out_final/wrfout_d03.nc"
+ARQ_DADOS <- "/home/rf/WD/WRF/test/em_real/jan_fev_out_final/wrfout_d03.nc"
 ARQ_ALVOS <- "scripts/var_targets.txt"
-ARQ_SAIDA <- "datasets/wrfout_d01_2026-07.csv"
+ARQ_SAIDA <- "datasets/wrfout_d03_jan-fev.csv"
 
 # Índice do nível vertical mais próximo do solo.
 # Convenção WRF: ZNU (eta, mass levels) decresce de ~1 (solo) para ~0 (topo),
