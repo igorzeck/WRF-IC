@@ -1,0 +1,21 @@
+datetime,wind_speed,wind_direction,temperature,dew_point,pressure,visibility,weather_information,categ_nuvem,altura_nuvem
+2026-06-25T12:00:00Z,2.0577788,240,19,18,1024,3000,Light intensity: Rain,Broken,152.4
+2026-06-25T13:00:00Z,1.5433341,240,20,18,1025,3000,Light intensity: Rain,Few,91.44
+2026-06-25T14:00:00Z,1.0288894,240,19,18,1025,2100,Light intensity: Rain,Few,91.44
+2026-06-25T15:00:00Z,1.0288894,130,20,18,1024,3000,Light intensity: Rain,Scattered,91.44
+2026-06-25T16:00:00Z,1.5433341,180,19,18,1024,3000,Light intensity: Rain,Scattered,91.44
+2026-06-25T17:00:00Z,3.0866682,130,20,18,1023,3500,Light intensity: Rain,Scattered,121.92
+2026-06-25T18:00:00Z,2.5722235,130,20,19,1023,3000,Light intensity: Rain,Scattered,121.92
+2026-06-25T19:00:00Z,2.0577788,150,19,18,1024,3000,Mist (French: Brume),Scattered,121.92
+2026-06-25T20:00:00Z,2.0577788,140,19,18,1024,3000,Light intensity: Rain,Scattered,121.92
+2026-06-25T21:00:00Z,2.5722235,160,20,18,1024,3000,Light intensity: Rain,Scattered,121.92
+2026-06-25T22:00:00Z,2.0577788,150,19,18,1025,3000,Light intensity: Rain,Scattered,121.92
+2026-06-25T23:00:00Z,2.0577788,160,19,18,1025,3000,Light intensity: Rain,Scattered,121.92
+2026-06-25T23:36:00Z,2.5722235,190,19,18,1025,1500,Light intensity: Rain,Broken,121.92
+2026-06-26T00:00:00Z,2.5722235,190,19,18,1025,1500,Light intensity: Rain,Broken,121.92
+2026-06-26T01:00:00Z,1.5433341,230,19,18,1025,1500,Light intensity: Rain,Broken,121.92
+2026-06-26T02:00:00Z,2.0577788,260,19,18,1025,1500,Light intensity: Rain,Overcast,152.4
+2026-06-26T03:00:00Z,2.5722235,260,19,18,1025,1500,Light intensity: Rain,Overcast,152.4
+2026-06-26T04:00:00Z,2.5722235,260,19,18,1025,2000,Light intensity: Rain,Overcast,152.4
+2026-06-26T05:00:00Z,2.5722235,300,19,18,1025,3000,Light intensity: Rain,Overcast,152.4
+2026-06-26T06:00:00Z,3.0866682,310,19,18,1024,2000,Light intensity: Rain,Overcast,152.4
