@@ -51,6 +51,7 @@ tuning_grid <- expand.grid(
   min.node.size = c(5, 10)
 )
 
+start_time <- Sys.time()
 message("Treinando modelo RF...")
 rf_model <- train(
   metar_vis_m ~ .,
@@ -60,6 +61,8 @@ rf_model <- train(
   tuneGrid = tuning_grid,
   importance = "permutation"  # para importância de variáveis
 )
+end_time <- Sys.time()
+train_time <- end_time - start_time
 
 ## 5. Avaliação ----
 message("Avaliando modelo...")
@@ -73,6 +76,7 @@ cat("\n--- Performance no set de testes ---\n")
 cat(sprintf("RMSE: %.2f m\n", test_metrics["RMSE"]))
 cat(sprintf("R2: %.4f\n", test_metrics["Rsquared"]))
 cat(sprintf("MAE: %.2f m\n", test_metrics["MAE"]))
+cat(sprintf("Tempo de treinamento: %.2f segundos\n", as.numeric(train_time, units = "secs")))
 
 ## 6. Salva modelo ----
 model_path <- "models/rf_wrf_model.rds"

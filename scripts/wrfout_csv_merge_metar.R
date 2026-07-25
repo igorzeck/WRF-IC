@@ -1,4 +1,4 @@
-# Script para a junção de arquivos WRFOUt em caasv com metars
+# Script para a junção de arquivos WRFOUT em CSV com metars
 library(tidyverse)
 
 wrfout_df <-read_csv("datasets/wrfout/final_csv/wrfout_d04_jan-fev.csv")
