@@ -90,5 +90,5 @@ for (v in vars) {
 
 # 4. Finalização ----
 final_df <- bind_rows(results)
-write.csv(final_df, "resources/magna_gfs_vs_wrf_metrics.csv", row.names = FALSE)
+write.csv2(final_df, "resources/magna_gfs_vs_wrf_metrics.csv", row.names = FALSE, )
 cat("Métricas Magna Simulation salvas em resources/magna_gfs_vs_wrf_metrics.csv\n")
