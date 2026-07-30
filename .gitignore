@@ -7,5 +7,6 @@
 *.nc
 *.png
 *.grib*
+resources
 !datasets/*.csv
 !.gitignore
