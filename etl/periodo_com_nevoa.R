@@ -6,7 +6,7 @@ library(ggplot2)
 
 ano <- readline(prompt = "Ano: ")
 local <- "SBGL"
-valor_base <- 1e4
+valor_base <- 3e3
 
 df_metar <- read_csv(paste0("datasets/metar_",local,"_",ano,".csv"))
 df_metar
