@@ -1,8 +1,9 @@
 # Script para encontrar o período de X horas com a maior quantidade 
 # de casos de visibilidade inferior a um limite especificado.
 #
-# Uso: Rscript maior_incidencia_nevoa.R [janela_horas] [limite_vis] [ano] [estacao]
-# Ex:  Rscript maior_incidencia_nevoa.R 24 1000 2026 SBGL
+# Uso: Rscript maior_incidencia_nevoa.R [janela_horas] [limite_vis] [ano/file_path] [estacao/vis_column]
+# Ex1: Rscript maior_incidencia_nevoa.R 24 1000 2026 SBGL
+# Ex2: Rscript maior_incidencia_nevoa.R 24 1000 datasets/metar.csv vis
 
 library(tidyverse)
 library(lubridate)
@@ -13,13 +14,27 @@ window_hours <- 24
 vis_ref <- 1000
 ano <- "2026"
 local <- "SBGL"
+vis_col <- "visibility"
+custom_file <- FALSE
 
 # Ler argumentos de linha de comando, se fornecidos
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args) >= 1) window_hours <- as.numeric(args[1])
 if (length(args) >= 2) vis_ref <- as.numeric(args[2])
-if (length(args) >= 3) ano <- args[3]
-if (length(args) >= 4) local <- args[4]
+
+if (length(args) >= 3) {
+  if (grepl("\\.csv$", args[3], ignore.case = TRUE)) {
+    file_path <- args[3]
+    custom_file <- TRUE
+    base_name <- tools::file_path_sans_ext(basename(file_path))
+    ano <- base_name
+    local <- "Custom"
+    if (length(args) >= 4) vis_col <- args[4]
+  } else {
+    ano <- args[3]
+    if (length(args) >= 4) local <- args[4]
+  }
+}
 
 # Modo interativo se executado no RStudio ou console (sem argumentos)
 if (interactive() && length(args) == 0) {
@@ -31,14 +46,26 @@ if (interactive() && length(args) == 0) {
   in_vis <- readline(prompt = paste0("Visibilidade limite (m) [", vis_ref, "]: "))
   if (in_vis != "") vis_ref <- as.numeric(in_vis)
   
-  in_ano <- readline(prompt = paste0("Ano [", ano, "]: "))
-  if (in_ano != "") ano <- in_ano
-  
-  in_local <- readline(prompt = paste0("Local (ICAO) [", local, "]: "))
-  if (in_local != "") local <- in_local
+  in_ano <- readline(prompt = paste0("Ano ou Caminho do Arquivo [", ano, "]: "))
+  if (in_ano != "") {
+    if (grepl("\\.csv$", in_ano, ignore.case = TRUE)) {
+      file_path <- in_ano
+      custom_file <- TRUE
+      ano <- tools::file_path_sans_ext(basename(file_path))
+      local <- "Custom"
+      in_vis_col <- readline(prompt = paste0("Nome da coluna de visibilidade [", vis_col, "]: "))
+      if (in_vis_col != "") vis_col <- in_vis_col
+    } else {
+      ano <- in_ano
+      in_local <- readline(prompt = paste0("Local (ICAO) [", local, "]: "))
+      if (in_local != "") local <- in_local
+    }
+  }
 }
 
-file_path <- paste0("datasets/metar_", local, "_", ano, ".csv")
+if (!custom_file) {
+  file_path <- paste0("datasets/metar_", local, "_", ano, ".csv")
+}
 
 if (!file.exists(file_path)) {
   stop("ERRO: Arquivo não encontrado: ", file_path)
@@ -48,6 +75,16 @@ cat(sprintf("Lendo dados de %s...\n", file_path))
 df_metar <- read_csv(file_path, show_col_types = FALSE)
 
 # Pre-processamento
+if (vis_col %in% names(df_metar) && vis_col != "visibility") {
+  df_metar <- df_metar %>% rename(visibility = !!sym(vis_col))
+} else if (!("visibility" %in% names(df_metar))) {
+  if ("vis" %in% names(df_metar)) {
+    df_metar <- df_metar %>% rename(visibility = vis)
+  } else {
+    stop("ERRO: Coluna de visibilidade '", vis_col, "' nao encontrada no dataset.")
+  }
+}
+
 df_metar <- df_metar %>% 
   arrange(datetime) %>%
   mutate(datetime = as.POSIXct(datetime, tz = "UTC"))
@@ -114,7 +151,11 @@ p <- df_p %>%
 out_dir <- "resources/ocorrencias_vis_baixa"
 if (!dir.exists(out_dir)) dir.create(out_dir, recursive = TRUE)
 
-out_name <- paste0("df_", local, "_", ano, "_max_casos_", window_hours, "h_menor_vis_", vis_ref, "m")
+if (custom_file) {
+  out_name <- paste0(ano, "_max_casos_", window_hours, "h_menor_vis_", vis_ref, "m")
+} else {
+  out_name <- paste0("df_", local, "_", ano, "_max_casos_", window_hours, "h_menor_vis_", vis_ref, "m")
+}
 csv_path <- file.path(out_dir, paste0(out_name, ".csv"))
 png_path <- file.path(out_dir, paste0(out_name, ".png"))
 
