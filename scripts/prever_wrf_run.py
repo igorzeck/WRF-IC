@@ -14,7 +14,7 @@ GEOGRID_SEC = 6.06
 UNGRIB_SEC_PER_FILE = 16.37
 METGRID_SEC_PER_FILE = 33.98
 REAL_SEC_PER_HOUR = 0.45
-WRF_SEC_PER_HOUR = 414.65
+WRF_SEC_PER_HOUR = 414.65 * 6
 
 GRIB2_SIZE_MB = 543.0
 OUT_D01_MB_PER_HR = 7.2
@@ -47,12 +47,12 @@ def format_size(mb):
     return f"{mb:.2f} MB"
 
 # Print do report automatizado
-def print_report(sim_hours, num_files, restart_interval=None):
+def print_report(sim_hours, num_files, cores, restart_interval=None):
     t_geogrid = GEOGRID_SEC
     t_ungrib = num_files * UNGRIB_SEC_PER_FILE
     t_metgrid = num_files * METGRID_SEC_PER_FILE
     t_real = sim_hours * REAL_SEC_PER_HOUR
-    t_wrf = sim_hours * WRF_SEC_PER_HOUR
+    t_wrf = sim_hours * WRF_SEC_PER_HOUR / cores
     t_total = t_geogrid + t_ungrib + t_metgrid + t_real + t_wrf
 
     # Extrapolação linear - Constantes
@@ -116,10 +116,11 @@ def print_report(sim_hours, num_files, restart_interval=None):
 
 def main():
     parser = argparse.ArgumentParser(description="Predição linear do tempo de execução do WRF e uso de disco.")
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--input-dir", type=str, help="Caminho dos arquivos GRIB2 do GFS (input).")
-    group.add_argument("--datas", type=str, nargs=2, metavar=('INICIO', 'FIM'), help="Data de início e fim e formato ISO (e.g. 2026-06-27T00:00:00).")
-    
+
+    parser.add_argument("--input-dir", type=str, help="Caminho dos arquivos GRIB2 do GFS (input).")
+    parser.add_argument("--datas", type=str, nargs=2, metavar=('INICIO', 'FIM'), help="Data de início e fim e formato ISO (e.g. 2026-06-27T00:00:00).")
+    parser.add_argument("--cores", type=int, default=6, help="Número de cores para a execução do wrf.exe - 'mpirun -n cores ./wrf.exe' (default é 6).")
+
     parser.add_argument("--intervalo-restarts", type=int, help="Intervalo (em horas) para geração de wrfrst (restarts).")
 
     args = parser.parse_args()
@@ -155,8 +156,10 @@ def main():
             
         sim_hours = math.ceil(diff_hours)
         num_files = (sim_hours // 3) + 1
-
-    print_report(sim_hours, num_files, args.intervalo_restarts)
+    
+    cores = args.cores
+    
+    print_report(sim_hours, num_files, cores, args.intervalo_restarts)
 
 if __name__ == "__main__":
     main()
