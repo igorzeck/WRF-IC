@@ -1,6 +1,5 @@
 # Script de conversão de arquivos WRFOUT (NetCDF4) para CSV
 # De antemão os arquivos NetCDF tem que estar mergidos em um único arquivo
-# TODO: Versão que itera sobre diversos arquivos
 # Setup ----
 library(tidyverse)
 library(ncdf4)
@@ -16,10 +15,10 @@ library(janitor)
 LAT_REF  <- -22.805151097556816
 LONG_REF <- -43.2566277050208
 
-ARQ_TEMPO <- "/home/rf/WD/WRF/test/em_real/jan_fev_out_final/wrfout_d03.nc"
-ARQ_DADOS <- "/home/rf/WD/WRF/test/em_real/jan_fev_out_final/wrfout_d03.nc"
+ARQ_TEMPO <- "/home/rf/WD/DATA/GFS_FINAL/out_1/wrfout_d03_2025-07-27.nc"
+ARQ_DADOS <- "/home/rf/WD/DATA/GFS_FINAL/out_1/wrfout_d03_2025-07-27.nc"
 ARQ_ALVOS <- "scripts/var_targets.txt"
-ARQ_SAIDA <- "datasets/wrfout_d03_jan-fev.csv"
+ARQ_SAIDA <- "datasets/wrfout_d03_out1.csv"
 
 # Índice do nível vertical mais próximo do solo.
 # Convenção WRF: ZNU (eta, mass levels) decresce de ~1 (solo) para ~0 (topo),
@@ -54,13 +53,12 @@ get_coord_ids <- function(nc_arq, lat_ref, long_ref) {
   min_long_id <- which(xlong_diff == min(xlong_diff), arr.ind = TRUE)
 
   # Coluna 2 é id longitude (para qual o latitude, id 1, é constante)
-  # NOTE: 1 ao final é para dimensão de tempo, poderia ser xlat[1, iy, 1] apenas!
   iy <- min_lat_id[1, 2]
-  min_lat <- xlat[1, iy, 1]
+  min_lat <- if (length(dim(xlat)) == 3) xlat[1, iy, 1] else xlat[1, iy]
 
   # Coluna 1 é id latitude (para qual a longitude, id 2, é constante)
   ix <- min_long_id[1, 1]
-  min_long <- xlong[ix, 1, 1]
+  min_long <- if (length(dim(xlong)) == 3) xlong[ix, 1, 1] else xlong[ix, 1]
 
   cat("Ponto de grade mais próximo -> lat:", min_lat, "lon:", min_long, "\n")
   return(c(ix, iy))
@@ -149,7 +147,8 @@ calc_agua_coluna <- function(nc_arq, coords) {
 #   massa é uma aproximação (mesmo ponto de grade, sem interpolação).
 # - Itens marcados como NA_real_ não têm variável equivalente direta no wrfout
 #   e exigiriam cálculo adicional (ex.: ascensão de parcela, perfil vertical de
-#   nível de congelamento, detecção de base de nuvem). Ficam como TODO.
+#   nível de congelamento, detecção de base de nuvem).
+###
 extratores <- list(
   "Dew point temperature (HTGL)" = function(nc, co) {
     calc_dewpoint(get_wrf_var(nc, co, "Q2"), get_wrf_var(nc, co, "PSFC"))
