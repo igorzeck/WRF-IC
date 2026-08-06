@@ -1,10 +1,10 @@
 # Script para gerar grafico de erros absolutos comparando a Visibilidade Nativa,
-# Visibilidade Koschmieder GFS, e Visibilidade Koschmieder WRF
-# Semelhante a plot_vis_error, mas calcula Koschmieder para o GFS e WRF
+# Visibilidade Koschmieder GFS, Visibilidade Koschmieder WRF, e WRF MOS (5-day model)
 
 library(tidyverse)
 library(lubridate)
 library(ncdf4)
+library(lightgbm)
 
 set.seed(42)
 
@@ -24,12 +24,11 @@ gfs_df <- read_csv("datasets/gfs_emulated_metar_raw2.csv", show_col_types = FALS
     datetime = as.POSIXct(datetime, tz = "UTC"),
     beta_clean = 0.03912 / 1000,
     beta_rh = (0.03912 / 1000) * pmax(1, (1 / (1 - pmin(umidade_relativa, 0.99)))^1.2),
-    # Assumimos LWC (nuvem de superficie) = 0 para GFS pois nao temos a variavel
     gfs_koschmieder = 3.912 / (beta_clean + beta_rh)
   ) %>%
   select(datetime, gfs_vis = vis, gfs_koschmieder)
 
-# 3. Extrair WRF (Koschmieder)
+# 3. Extrair WRF (Koschmieder) via NetCDF
 files <- list.files("/home/rf/WD/WRF/test/em_real", pattern = "^wrfout_d04_2026-06-2[2-8]", full.names = TRUE)
 files <- sort(files)
 
@@ -83,36 +82,62 @@ for (f in files) {
 
 wrf_df <- bind_rows(records)
 
-# 4. Avaliar Erros
+# 4. WRF MOS (Modelo LightGBM treinado nos 5 dias)
+mos_model <- readRDS("models/wrf_5day_regression.rds")
+factor_levels <- readRDS("models/factor_levels.rds")$categ_nuvem
+feats <- c("vel_vento", "dir_vento", "temp_ar", "temp_orvalho", "pressao", "categ_nuvem", "lmlt", "umidade_relativa")
+
+wrf_mos_raw <- read_csv("datasets/wrf_emulated_metar_out2.csv", show_col_types = FALSE) %>%
+  mutate(
+    datetime = as.POSIXct(datetime, tz = "UTC"),
+    categ_nuvem = as.integer(factor(categ_nuvem, levels = factor_levels))
+  )
+
+X_mat <- as.matrix(wrf_mos_raw[, feats])
+wrf_mos_raw$wrf_mos_vis <- predict(mos_model, X_mat)
+
+wrf_mos_df <- wrf_mos_raw %>% select(datetime, wrf_mos_vis)
+
+# 5. Avaliar Erros
 df_eval <- metar_obs %>%
   inner_join(gfs_df, by = "datetime") %>%
   inner_join(wrf_df, by = "datetime") %>%
+  inner_join(wrf_mos_df, by = "datetime") %>%
   mutate(
     hour = hour(datetime)
   ) %>%
   filter(hour %% 3 == 0) %>%
   mutate(
-    GFS_Native_AE = abs(gfs_vis - obs_vis),
-    GFS_Koschmieder_AE = abs(gfs_koschmieder - obs_vis),
-    WRF_Koschmieder_AE = abs(wrf_koschmieder - obs_vis)
+    WRF_Koschmieder_AE = abs(wrf_koschmieder - obs_vis),
+    WRF_MOS_AE = abs(wrf_mos_vis - obs_vis)
   )
 
+baseline_mae <- mean(abs(mean(df_eval$obs_vis) - df_eval$obs_vis))
+
 plot_df <- df_eval %>%
-  select(datetime, GFS_Native_AE, GFS_Koschmieder_AE, WRF_Koschmieder_AE) %>%
+  select(datetime, WRF_Koschmieder_AE, WRF_MOS_AE) %>%
   pivot_longer(cols = -datetime, names_to = "Method", values_to = "Absolute_Error")
 
-# 5. Gerar Gráfico
+# 6. Gerar Gráfico
 p <- ggplot(plot_df, aes(x = datetime, y = Absolute_Error, color = Method)) +
+  geom_hline(aes(yintercept = baseline_mae, linetype = "Média da Visibilidade"), color = "gray50", size = 1) +
   geom_point(size = 3, alpha = 0.7) +
   geom_line(alpha = 0.5) +
   scale_color_manual(
-    values = c("GFS_Native_AE" = "#377eb8", "GFS_Koschmieder_AE" = "#984ea3", "WRF_Koschmieder_AE" = "#e41a1c"),
-    labels = c("GFS_Native_AE" = "GFS Visibilidade Nativa", "GFS_Koschmieder_AE" = "GFS Koschmieder (calculado)", "WRF_Koschmieder_AE" = "WRF Koschmieder")
+    values = c(
+      "WRF_Koschmieder_AE" = "red",
+      "WRF_MOS_AE" = "cornflowerblue"
+    ),
+    labels = c(
+      "WRF_Koschmieder_AE" = "WRF Koschmieder",
+      "WRF_MOS_AE" = "WRF MOS (LightGBM 5-Day)"
+    )
   ) +
+  scale_linetype_manual(name = "", values = c("Média da Visibilidade" = "dashed")) +
   scale_y_continuous(labels = scales::comma_format(suffix = " m")) +
   labs(
-    title = "Erro Absoluto: Formulação Física (Koschmieder) vs Nativo",
-    subtitle = "WRF vs GFS a cada 3h (22 a 28 de Junho)",
+    title = "Erro Absoluto: Formulação Física vs Machine Learning",
+    subtitle = "WRF e GFS a cada 3h (22 a 28 de Junho)",
     x = "Data",
     y = "Erro Absoluto (m)",
     color = "Método"
