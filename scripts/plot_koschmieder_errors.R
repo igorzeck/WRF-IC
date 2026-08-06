@@ -1,5 +1,5 @@
 # Script para gerar grafico de erros absolutos comparando a Visibilidade Nativa,
-# Visibilidade Koschmieder GFS, Visibilidade Koschmieder WRF, e WRF MOS (5-day model)
+# Visibilidade Koschmieder GFS, Visibilidade Koschmieder WRF, e WRF MOS (144h)
 
 library(tidyverse)
 library(lubridate)
