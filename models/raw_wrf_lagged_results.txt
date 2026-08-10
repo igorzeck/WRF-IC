@@ -1,0 +1,32 @@
+
+> cat("--- Modelo base 5-dias WRF ---\n")
+--- Modelo base 5-dias WRF ---
+
+> cat("Modelo base CV RMSE:", cv_base$best_score, "\n")
+Modelo base CV RMSE: 2369.625 
+
+> cat("Modelo defasado CV RMSE:", cv_lagged$best_score, "\n\n")
+Modelo defasado CV RMSE: 2101.024 
+
+
+> cat("Feature Importance (Modelo defasado):\n")
+Feature Importance (Modelo defasado):
+
+> print(imp)
+                  Feature       Gain      Cover  Frequency
+                   <char>      <num>      <num>      <num>
+ 1:               pressao 0.20580444 0.03219824 0.03265766
+ 2:               temp_ar 0.16267302 0.15135080 0.13288288
+ 3:          pressao_lag3 0.15076077 0.09218732 0.09121622
+ 4:      umidade_relativa 0.07453993 0.04539508 0.05067568
+ 5:          pressao_lag6 0.07328315 0.07444336 0.07882883
+ 6:          temp_ar_lag6 0.07276297 0.10297088 0.10360360
+ 7:          temp_ar_lag3 0.06383690 0.05324459 0.05630631
+ 8: umidade_relativa_lag6 0.05706436 0.09905882 0.09459459
+ 9: umidade_relativa_lag3 0.03485799 0.06245316 0.04954955
+10:           categ_nuvem 0.03422193 0.05617863 0.07432432
+11:             dir_vento 0.03016703 0.09961769 0.09009009
+12:          temp_orvalho 0.02683465 0.07624697 0.09121622
+13:             vel_vento 0.01319285 0.05465446 0.05405405
+
+> sink()

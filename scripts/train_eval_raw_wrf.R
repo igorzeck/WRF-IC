@@ -8,7 +8,7 @@ library(lightgbm)
 
 set.seed(42)
 
-df_wrf <- read_csv("datasets/wrf_emulated_metar_out2.csv", show_col_types = FALSE) %>%
+df_wrf <- read_csv("datasets/wrf_emulated_wrf_raw_out2.csv", show_col_types = FALSE) %>%
   mutate(datetime = as.POSIXct(datetime, tz = "UTC"))
 
 metar_obs <- read_csv("datasets/metar_SBGL_2026.csv", show_col_types = FALSE) %>%
@@ -27,18 +27,18 @@ df_wrf_lagged <- df_wrf %>%
     pressao_lag6 = dplyr::lag(pressao, 6)
   )
 
+feats_base <- c("vel_vento", "dir_vento", "temp_ar", "temp_orvalho", "pressao", "categ_nuvem", "lmlt", "umidade_relativa")
+feats_lagged <- c(feats_base, "temp_ar_lag3", "temp_ar_lag6", "umidade_relativa_lag3", "umidade_relativa_lag6", "pressao_lag3", "pressao_lag6")
+
 df_eval <- df_wrf_lagged %>%
   inner_join(metar_obs, by = "datetime") %>%
   filter(is.finite(obs_vis)) %>%
-  drop_na() # dropa as primeiras 6h (sem dados anterioes - período de spin-up)
+  drop_na(all_of(c(feats_lagged, "obs_vis"))) # dropa as primeiras 6h e lida apenas com colunas usadas
 
 factor_levels <- readRDS("models/factor_levels.rds")$categ_nuvem
 
 df_eval <- df_eval %>%
   mutate(categ_nuvem = as.integer(factor(categ_nuvem, levels = factor_levels)))
-
-feats_base <- c("vel_vento", "dir_vento", "temp_ar", "temp_orvalho", "pressao", "categ_nuvem", "lmlt", "umidade_relativa")
-feats_lagged <- c(feats_base, "temp_ar_lag3", "temp_ar_lag6", "umidade_relativa_lag3", "umidade_relativa_lag6", "pressao_lag3", "pressao_lag6")
 
 # 1. Modelo base -----
 cat("\n--- Modelo base (defasado) ---\n")
