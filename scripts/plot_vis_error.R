@@ -23,7 +23,7 @@ metar_obs <- metar_raw %>%
 ## 1.2. GFS (vis nativa)
 gfs_df <- read_csv("datasets/gfs_emulated_metar_raw2.csv", show_col_types = FALSE) %>%
   mutate(datetime = as.POSIXct(datetime, tz = "UTC")) %>%
-  select(datetime, gfs_vis = vis)
+  select(datetime, gfs_vis)
 
 # 2. Calcular Koschmieder vis para o WRF
 files <- list.files("/home/rf/WD/WRF/test/em_real", pattern = "^wrfout_d04_2026-06-2[2-8]", full.names = TRUE)
@@ -102,7 +102,7 @@ p <- ggplot(plot_df, aes(x = datetime, y = Absolute_Error, color = Model)) +
   geom_point(size = 3, alpha = 0.6) +
   geom_line(alpha = 0.3) +
   scale_color_manual(values = c("GFS_AE" = "#377eb8", "WRF_AE" = "#e41a1c"),
-                     labels = c("GFS_AE" = "GFS Error", "WRF_AE" = "WRF Error")) +
+                     labels = c("GFS_AE" = "Erro GFS", "WRF_AE" = "Erro WRF")) +
   scale_y_continuous(labels = scales::comma_format(suffix = " m")) +
   labs(
     title = "Erro Absoluto na Visibilidade (22 a 28 de Junho)",
