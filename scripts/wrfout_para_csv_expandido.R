@@ -1,5 +1,4 @@
 # Script de conversão de arquivos WRFOUT (NetCDF4) para CSV
-# De antemão os arquivos NetCDF tem que estar mergidos em um único arquivo
 # Setup ----
 library(tidyverse)
 library(ncdf4)
@@ -15,29 +14,21 @@ library(janitor)
 LAT_REF  <- -22.805151097556816
 LONG_REF <- -43.2566277050208
 
-ARQ_TEMPO <- "/home/rf/WD/DATA/GFS_FINAL/out_1/wrfout_d03_2025-07-27.nc"
-ARQ_DADOS <- "/home/rf/WD/DATA/GFS_FINAL/out_1/wrfout_d03_2025-07-27.nc"
+DIR_DADOS <- "/home/rf/WD/WRF/test/em_real"
+PATTERN_DADOS <- "^wrfout_d04_2026-06-2"
 ARQ_ALVOS <- "scripts/var_targets.txt"
-ARQ_SAIDA <- "datasets/wrfout_d03_out1.csv"
+ARQ_SAIDA <- "datasets/wrf_raw_out2.csv"
 
-# Índice do nível vertical mais próximo do solo.
-# Convenção WRF: ZNU (eta, mass levels) decresce de ~1 (solo) para ~0 (topo),
-# logo o índice 1 do bottom_top é sempre o nível mais próximo da superfície.
-NIVEL_SOLO <- 1
+args <- commandArgs(trailingOnly = TRUE)
+if (length(args) >= 1) DIR_DADOS <- args[1]
+if (length(args) >= 2) PATTERN_DADOS <- args[2]
+if (length(args) >= 3) ARQ_SAIDA <- args[3]
 
-## Tempo ----
-nc_arq <- nc_open(ARQ_TEMPO)
-valores_t <- ncvar_get(nc_arq, "XTIME")
-unid_t <- ncatt_get(nc_arq, "XTIME", "units")$value
-unid_t
-# "minutes since 2025-06-02 12:00:00"
+# Obter lista de arquivos
+arquivos_wrf <- list.files(DIR_DADOS, pattern = PATTERN_DADOS, full.names = TRUE)
+if (length(arquivos_wrf) == 0) stop("Nenhum arquivo encontrado em ", DIR_DADOS, " com padrao ", PATTERN_DADOS)
+cat("Encontrados", length(arquivos_wrf), "arquivos para processar.\n")
 
-t_ustr <- strsplit(unid_t, " ")
-t_origem <- paste(unlist(t_ustr)[3], unlist(t_ustr)[4])
-
-seq_h <- as.POSIXct(valores_t * 60, origin = t_origem, tz = "UTC")
-nc_close(nc_arq)
-seq_h
 
 ## Funções ----
 ### Coordenadas ----
@@ -70,10 +61,13 @@ get_coord_ids <- function(nc_arq, lat_ref, long_ref) {
 # n_vert >= 1 -> variável 3D (LAT, LONG, BOTTOM_TOP, TIME), nível específico
 get_wrf_var <- function(nc_arq, coords, variavel, n_vert = -1) {
   nc_var <- ncvar_get(nc_arq, variavel)
+  dims <- length(dim(nc_var))
   if (n_vert < 0) {
-    nc_var[coords[1], coords[2], ]
+    if (dims == 2) return(nc_var[coords[1], coords[2]])
+    if (dims == 3) return(nc_var[coords[1], coords[2], ])
   } else {
-    nc_var[coords[1], coords[2], n_vert, ]
+    if (dims == 3) return(nc_var[coords[1], coords[2], n_vert])
+    if (dims == 4) return(nc_var[coords[1], coords[2], n_vert, ])
   }
 }
 
@@ -117,24 +111,38 @@ calc_wind_dir <- function(u, v) {
 # Água de nuvem/precipitação integrada na coluna (kg/m^2), via peso de massa seca
 # dp_k = (MU + MUB) * DNW_k  (Pa por camada); integral = sum(q_k * dp_k) / g
 calc_agua_coluna <- function(nc_arq, coords) {
-  q_total <- ncvar_get(nc_arq, "QCLOUD")[coords[1], coords[2], , ] +
-    ncvar_get(nc_arq, "QRAIN")[coords[1], coords[2], , ] +
-    ncvar_get(nc_arq, "QICE")[coords[1], coords[2], , ] +
-    ncvar_get(nc_arq, "QSNOW")[coords[1], coords[2], , ] +
-    ncvar_get(nc_arq, "QGRAUP")[coords[1], coords[2], , ]
-
-  mu  <- ncvar_get(nc_arq, "MU")[coords[1], coords[2], ]
-  mub <- ncvar_get(nc_arq, "MUB")[coords[1], coords[2], ]
-  dnw <- ncvar_get(nc_arq, "DNW")
-  g <- 9.81
-
-  n_t <- length(mu)
-  resultado <- numeric(n_t)
-  for (t in seq_len(n_t)) {
-    dp <- abs((mu[t] + mub[t]) * dnw)
-    resultado[t] <- sum(q_total[, t] * dp) / g
+  q_cld <- ncvar_get(nc_arq, "QCLOUD")
+  dims <- length(dim(q_cld))
+  
+  if (dims == 3) {
+    q_total <- q_cld[coords[1], coords[2], ] +
+      ncvar_get(nc_arq, "QRAIN")[coords[1], coords[2], ] +
+      ncvar_get(nc_arq, "QICE")[coords[1], coords[2], ] +
+      ncvar_get(nc_arq, "QSNOW")[coords[1], coords[2], ] +
+      ncvar_get(nc_arq, "QGRAUP")[coords[1], coords[2], ]
+    mu <- ncvar_get(nc_arq, "MU")[coords[1], coords[2]]
+    mub <- ncvar_get(nc_arq, "MUB")[coords[1], coords[2]]
+    dnw <- ncvar_get(nc_arq, "DNW")
+    dp <- abs((mu + mub) * dnw)
+    return(sum(q_total * dp) / 9.81)
+  } else {
+    q_total <- q_cld[coords[1], coords[2], , ] +
+      ncvar_get(nc_arq, "QRAIN")[coords[1], coords[2], , ] +
+      ncvar_get(nc_arq, "QICE")[coords[1], coords[2], , ] +
+      ncvar_get(nc_arq, "QSNOW")[coords[1], coords[2], , ] +
+      ncvar_get(nc_arq, "QGRAUP")[coords[1], coords[2], , ]
+    mu <- ncvar_get(nc_arq, "MU")[coords[1], coords[2], ]
+    mub <- ncvar_get(nc_arq, "MUB")[coords[1], coords[2], ]
+    dnw <- ncvar_get(nc_arq, "DNW")
+    
+    n_t <- length(mu)
+    resultado <- numeric(n_t)
+    for (t in seq_len(n_t)) {
+      dp <- abs((mu[t] + mub[t]) * dnw)
+      resultado[t] <- sum(q_total[, t] * dp) / 9.81
+    }
+    return(resultado)
   }
-  resultado
 }
 
 ### Mapeamento alvo -> extrator ----
@@ -188,8 +196,12 @@ extratores <- list(
   "Temperature (SFC)" = function(nc, co) get_wrf_var(nc, co, "TSK"),
   "Temperature - sea Temperature" = function(nc, co) get_wrf_var(nc, co, "SST"),
   "Total cloud cover" = function(nc, co) {
-    cldfra <- ncvar_get(nc, "CLDFRA")[co[1], co[2], , ]
-    apply(cldfra, 2, max)
+    cldfra <- ncvar_get(nc, "CLDFRA")
+    if (length(dim(cldfra)) == 3) {
+      max(cldfra[co[1], co[2], ])
+    } else {
+      apply(cldfra[co[1], co[2], , ], 2, max)
+    }
   },
   "Total column-integrated cloud water" = function(nc, co) calc_agua_coluna(nc, co),
   "Water temperature" = function(nc, co) get_wrf_var(nc, co, "SSTSK"),
@@ -206,37 +218,52 @@ extratores <- list(
 )
 
 # Conversão ----
-nc_arq <- nc_open(ARQ_DADOS)
-coords <- get_coord_ids(nc_arq, LAT_REF, LONG_REF)
-
 alvos <- read_lines(ARQ_ALVOS)
+todos_dados <- list()
 
-tibble_csv <- tibble(
-  datetime = c(seq_h) # Necessário concatenar os valores para não irem como listas
-)
+# Convenção WRF: ZNU (eta, mass levels) decresce de ~1 (solo) para ~0 (topo),
+# logo o índice 1 do bottom_top é sempre o nível mais próximo da superfície.
+NIVEL_SOLO <- 1
 
-for (alvo in alvos) {
-  cat(alvo, "\n")
-  extrator <- extratores[[alvo]]
-  if (is.null(extrator)) {
-    cat("  -> Sem extrator mapeado para este alvo, pulando.\n")
-    next
-  }
-  valor <- tryCatch(
-    extrator(nc_arq, coords),
-    error = function(e) {
-      cat("  -> Erro ao extrair:", conditionMessage(e), "\n")
-      rep(NA_real_, length(seq_h))
+for (arquivo in arquivos_wrf) {
+  cat("\nProcessando arquivo:", basename(arquivo), "\n")
+  nc_arq <- nc_open(arquivo)
+  
+  # Tempo
+  valores_t <- ncvar_get(nc_arq, "XTIME")
+  unid_t <- ncatt_get(nc_arq, "XTIME", "units")$value
+  t_ustr <- strsplit(unid_t, " ")
+  t_origem <- paste(unlist(t_ustr)[3], unlist(t_ustr)[4])
+  seq_h <- as.POSIXct(valores_t * 60, origin = t_origem, tz = "UTC")
+  
+  coords <- get_coord_ids(nc_arq, LAT_REF, LONG_REF)
+  
+  tibble_csv <- tibble(datetime = c(seq_h))
+  
+  for (alvo in alvos) {
+    extrator <- extratores[[alvo]]
+    if (is.null(extrator)) {
+      next
     }
-  )
-  tibble_csv <- tibble_csv %>%
-    mutate("{alvo}" := valor)
+    valor <- tryCatch(
+      extrator(nc_arq, coords),
+      error = function(e) {
+        cat("  -> Erro ao extrair", alvo, ":", conditionMessage(e), "\n")
+        rep(NA_real_, length(seq_h))
+      }
+    )
+    tibble_csv <- tibble_csv %>%
+      mutate("{alvo}" := valor)
+  }
+  
+  nc_close(nc_arq)
+  todos_dados[[length(todos_dados) + 1]] <- tibble_csv
 }
 
-nc_close(nc_arq)
-glimpse(tibble_csv)
-tibble_csv
-
-tibble_csv <- tibble_csv %>%
+# Combinar e salvar
+df_final <- bind_rows(todos_dados) %>%
   clean_names()
-write_csv(tibble_csv, ARQ_SAIDA)
+
+glimpse(df_final)
+write_csv(df_final, ARQ_SAIDA)
+cat("\nArquivo salvo com sucesso em:", ARQ_SAIDA, "\n")
