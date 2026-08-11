@@ -1,6 +1,5 @@
-# Script para gerar métricas (RMSE, MAE, Bias, Pearson, R2) comparando todos os modelos
-# de visibilidade avaliados (GFS Koschmieder, WRF Koschmieder, WRF MOS, WRF MOS Lagged)
-# no período de 5 dias (22 a 28 de Junho de 2026)
+# Script para gerar métricas de classificação (Nevoeiro: vis <= 1000m) comparando todos os modelos
+# de visibilidade avaliados (GFS, WRF, WRF MOS, WRF MOS Lagged e Perfect Prog)
 
 library(tidyverse)
 library(lubridate)
@@ -17,8 +16,11 @@ metar_raw <- read_csv("datasets/metar_SBGL_2026.csv", show_col_types = FALSE) %>
 metar_obs <- metar_raw %>%
   filter(datetime >= as.POSIXct("2026-06-22 00:00:00", tz = "UTC") &
          datetime <= as.POSIXct("2026-06-28 00:00:00", tz = "UTC")) %>%
-  mutate(obs_vis = visibility) %>%
-  select(datetime, obs_vis)
+  mutate(
+    obs_vis = visibility,
+    obs_fog = ifelse(visibility <= 1000, 1, 0)
+  ) %>%
+  select(datetime, obs_vis, obs_fog)
 
 # 2. Carregar GFS e Calcular Koschmieder
 gfs_df <- read_csv("datasets/gfs_emulated_metar_raw2.csv", show_col_types = FALSE) %>%
@@ -83,7 +85,6 @@ for (f in files) {
   
   records[[f]] <- data.frame(datetime = dt, wrf_koschmieder = wrf_koschmieder, wrf_native_vis = wrf_native_vis)
 }
-
 wrf_df <- bind_rows(records)
 
 # 4. Modelos Preditivos (WRF MOS e Perfect Prog)
@@ -91,9 +92,9 @@ mos_model_base <- readRDS("models/wrf_5day_regression.rds")
 mos_model_lagged <- readRDS("models/wrf_lagged_regression.rds")
 perf_prog_lgb <- readRDS("models/lightgbm_regression_split.rds")
 perf_prog_rf <- readRDS("models/rf_regression_split.rds")
+class_lgb <- readRDS("models/lightgbm_metar_historical_classification.rds") # Modelo de Classificação Binária (Nevoeiro)
 
 factor_levels <- readRDS("models/factor_levels.rds")$categ_nuvem
-
 feats_base <- c("vel_vento", "dir_vento", "temp_ar", "temp_orvalho", "pressao", "categ_nuvem", "lmlt", "umidade_relativa")
 feats_lagged <- c(feats_base, "temp_ar_lag3", "temp_ar_lag6", "umidade_relativa_lag3", "umidade_relativa_lag6", "pressao_lag3", "pressao_lag6")
 
@@ -113,56 +114,80 @@ wrf_mos_raw <- read_csv("datasets/wrf_emulated_wrf_raw_out2.csv", show_col_types
   )
 
 X_mat_base <- as.matrix(wrf_mos_raw[, feats_base])
+# Regressões (preveem Visibilidade contínua)
 wrf_mos_raw$wrf_mos_vis_base <- predict(mos_model_base, X_mat_base)
 wrf_mos_raw$perf_prog_vis_lgb <- predict(perf_prog_lgb, X_mat_base)
 
-# Para Ranger Random Forest precisamos passar um data.frame limpo com os nomes e tipos corretos
 df_rf <- as.data.frame(wrf_mos_raw)[, feats_base]
 wrf_mos_raw$perf_prog_vis_rf <- predict(perf_prog_rf, df_rf)$predictions
 
-# Lagged features have NAs for the first 6 hours, predictions will be NA for them
 X_mat_lagged <- as.matrix(wrf_mos_raw[, feats_lagged])
 wrf_mos_raw$wrf_mos_vis_lagged <- predict(mos_model_lagged, X_mat_lagged)
 
+# Classificação (preve probabilidade de Fog)
+wrf_mos_raw$perf_prog_class_lgb_prob <- predict(class_lgb, X_mat_base)
+
+# Binarizar:
 wrf_mos_df <- wrf_mos_raw %>% 
-  select(datetime, wrf_mos_vis_base, wrf_mos_vis_lagged, perf_prog_vis_lgb, perf_prog_vis_rf)
+  mutate(
+    fog_wrf_mos_base = ifelse(wrf_mos_vis_base <= 1000, 1, 0),
+    fog_wrf_mos_lagged = ifelse(wrf_mos_vis_lagged <= 1000, 1, 0),
+    fog_perf_prog_lgb = ifelse(perf_prog_vis_lgb <= 1000, 1, 0),
+    fog_perf_prog_rf = ifelse(perf_prog_vis_rf <= 1000, 1, 0),
+    fog_perf_prog_class = ifelse(perf_prog_class_lgb_prob >= 0.5, 1, 0) # threshold em 50%
+  ) %>%
+  select(datetime, starts_with("fog_"))
 
 # 5. Avaliar Erros
 df_eval <- metar_obs %>%
   inner_join(wrf_df, by = "datetime") %>%
   inner_join(wrf_mos_df, by = "datetime") %>%
   left_join(gfs_df, by = "datetime") %>%
-  filter(is.finite(obs_vis))
+  mutate(
+    fog_gfs_vis = ifelse(gfs_vis <= 1000, 1, 0),
+    fog_gfs_koschmieder = ifelse(gfs_koschmieder <= 1000, 1, 0),
+    fog_wrf_native_vis = ifelse(wrf_native_vis <= 1000, 1, 0),
+    fog_wrf_koschmieder = ifelse(wrf_koschmieder <= 1000, 1, 0)
+  )
 
-# 6. Calcular Métricas
-models <- c("gfs_vis", "gfs_koschmieder", "wrf_native_vis", "wrf_koschmieder", "perf_prog_vis_lgb", "perf_prog_vis_rf", "wrf_mos_vis_base", "wrf_mos_vis_lagged")
+# 6. Calcular Métricas de Classificação (Nevoeiro vs Sem Nevoeiro)
+models <- c(
+  "fog_gfs_vis", "fog_gfs_koschmieder", "fog_wrf_native_vis", "fog_wrf_koschmieder", 
+  "fog_wrf_mos_base", "fog_wrf_mos_lagged", "fog_perf_prog_lgb", "fog_perf_prog_rf", "fog_perf_prog_class"
+)
+
 results <- list()
 
-calc_r2 <- function(pred, obs) {
-  valid <- !is.na(pred) & !is.na(obs)
-  if(sum(valid) == 0) return(NA)
-  pred <- pred[valid]
-  obs <- obs[valid]
-  1 - sum((obs - pred)^2) / sum((obs - mean(obs))^2)
-}
-
 for (m in models) {
-  obs <- df_eval$obs_vis
+  obs <- df_eval$obs_fog
   pred <- df_eval[[m]]
   
   valid <- !is.na(obs) & !is.na(pred)
-  
   obs <- obs[valid]
   pred <- pred[valid]
   
+  if (sum(valid) == 0) next
+  
+  a <- sum(pred == 1 & obs == 1) # True Positive
+  b <- sum(pred == 1 & obs == 0) # False Positive
+  c <- sum(pred == 0 & obs == 1) # False Negative
+  d <- sum(pred == 0 & obs == 0) # True Negative
+  N <- a + b + c + d
+  
+  acc <- (a + d) / N
+  csi <- ifelse((a + b + c) > 0, a / (a + b + c), 0)
+  hss_num <- 2 * (a * d - b * c)
+  hss_den <- ((a + c) * (c + d) + (a + b) * (b + d))
+  hss <- ifelse(hss_den > 0, hss_num / hss_den, 0)
+  f1 <- ifelse((2 * a + b + c) > 0, (2 * a) / (2 * a + b + c), 0)
+  
   res <- data.frame(
     Model = m,
-    N_Valid_Samples = sum(valid),
-    RMSE = sqrt(mean((pred - obs)^2)),
-    MAE = mean(abs(pred - obs)),
-    Bias = mean(pred - obs),
-    Pearson = cor(pred, obs),
-    R2 = calc_r2(pred, obs)
+    Accuracy = acc,
+    CSI_ThreatScore = csi,
+    HeidkeSkillScore = hss,
+    F1_Score = f1,
+    TP = a, FP = b, FN = c, TN = d
   )
   results[[m]] <- res
 }
@@ -170,5 +195,5 @@ for (m in models) {
 final_df <- bind_rows(results)
 print(final_df)
 
-write_csv(final_df, "resources/metricas_vis_modelos.csv")
-cat("Métricas de Visibilidade salvas em resources/metricas_vis_modelos.csv\n")
+write_csv(final_df, "resources/metricas_classificacao_modelos.csv")
+cat("Métricas de Classificação salvas em resources/metricas_classificacao_modelos.csv\n")
