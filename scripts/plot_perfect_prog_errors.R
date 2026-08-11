@@ -79,7 +79,7 @@ rf_model <- readRDS("models/rf_regression_split.rds")
 factor_levels <- readRDS("models/factor_levels.rds")$categ_nuvem
 feats <- c("vel_vento", "dir_vento", "temp_ar", "temp_orvalho", "pressao", "categ_nuvem", "lmlt", "umidade_relativa")
 
-wrf_mos_raw <- read_csv("datasets/wrf_emulated_metar_out2.csv", show_col_types = FALSE) %>%
+wrf_mos_raw <- read_csv("datasets/wrf_emulated_wrf_raw_out2.csv", show_col_types = FALSE) %>%
   mutate(
     datetime = as.POSIXct(datetime, tz = "UTC"),
     categ_nuvem = as.integer(factor(categ_nuvem, levels = factor_levels))

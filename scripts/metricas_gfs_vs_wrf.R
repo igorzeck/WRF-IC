@@ -17,7 +17,7 @@ gfs_df <- read_csv("datasets/gfs_emulated_metar_raw2.csv", show_col_types = FALS
   ) %>% select(datetime, ends_with("_gfs"))
 
 # 2. Carregar Dados WRF (Magna d04) ----
-wrf_df <- read_csv("datasets/df_magna_d04_full.csv", show_col_types = FALSE) %>%
+wrf_df <- read_csv("datasets/wrf_raw_out2.csv", show_col_types = FALSE) %>%
   mutate(
     datetime = as.POSIXct(datetime, tz = "UTC"),
     temp_ar_wrf = temperature_htgl - 273.15,
