@@ -26,7 +26,7 @@ gfs_df <- read_csv("datasets/gfs_emulated_metar_raw2.csv", show_col_types = FALS
     beta_rh = (0.03912 / 1000) * pmax(1, (1 / (1 - pmin(umidade_relativa, 0.99)))^1.2),
     gfs_koschmieder = 3.912 / (beta_clean + beta_rh)
   ) %>%
-  select(datetime, gfs_vis = vis, gfs_koschmieder)
+  select(datetime, gfs_vis, gfs_koschmieder)
 
 # 3. Extrair WRF (Koschmieder) via NetCDF
 files <- list.files("/home/rf/WD/WRF/test/em_real", pattern = "^wrfout_d04_2026-06-2[2-8]", full.names = TRUE)
@@ -87,7 +87,7 @@ mos_model <- readRDS("models/wrf_5day_regression.rds")
 factor_levels <- readRDS("models/factor_levels.rds")$categ_nuvem
 feats <- c("vel_vento", "dir_vento", "temp_ar", "temp_orvalho", "pressao", "categ_nuvem", "lmlt", "umidade_relativa")
 
-wrf_mos_raw <- read_csv("datasets/wrf_emulated_metar_out2.csv", show_col_types = FALSE) %>%
+wrf_mos_raw <- read_csv("datasets/wrf_emulated_wrf_raw_out2.csv", show_col_types = FALSE) %>%
   mutate(
     datetime = as.POSIXct(datetime, tz = "UTC"),
     categ_nuvem = as.integer(factor(categ_nuvem, levels = factor_levels))
