@@ -91,6 +91,7 @@ mos_model_base <- readRDS("models/wrf_5day_regression.rds")
 mos_model_lagged <- readRDS("models/wrf_lagged_regression.rds")
 perf_prog_lgb <- readRDS("models/lightgbm_regression_split.rds")
 perf_prog_rf <- readRDS("models/rf_regression_split.rds")
+perf_prog_lagged_lgb <- readRDS("models/lightgbm_pp_lagged.rds")
 
 factor_levels <- readRDS("models/factor_levels.rds")$categ_nuvem
 
@@ -123,9 +124,10 @@ wrf_mos_raw$perf_prog_vis_rf <- predict(perf_prog_rf, df_rf)$predictions
 # Lagged features have NAs for the first 6 hours, predictions will be NA for them
 X_mat_lagged <- as.matrix(wrf_mos_raw[, feats_lagged])
 wrf_mos_raw$wrf_mos_vis_lagged <- predict(mos_model_lagged, X_mat_lagged)
+wrf_mos_raw$perf_prog_vis_lgb_lagged <- predict(perf_prog_lagged_lgb, X_mat_lagged)
 
 wrf_mos_df <- wrf_mos_raw %>% 
-  select(datetime, wrf_mos_vis_base, wrf_mos_vis_lagged, perf_prog_vis_lgb, perf_prog_vis_rf)
+  select(datetime, wrf_mos_vis_base, wrf_mos_vis_lagged, perf_prog_vis_lgb, perf_prog_vis_rf, perf_prog_vis_lgb_lagged)
 
 # 5. Avaliar Erros
 df_eval <- metar_obs %>%
@@ -135,7 +137,10 @@ df_eval <- metar_obs %>%
   filter(is.finite(obs_vis))
 
 # 6. Calcular Métricas
-models <- c("gfs_vis", "gfs_koschmieder", "wrf_native_vis", "wrf_koschmieder", "perf_prog_vis_lgb", "perf_prog_vis_rf", "wrf_mos_vis_base", "wrf_mos_vis_lagged")
+models <- c(
+  "gfs_vis", "gfs_koschmieder", "wrf_native_vis", "wrf_koschmieder",
+  "perf_prog_vis_lgb", "perf_prog_vis_rf", "perf_prog_vis_lgb_lagged", "wrf_mos_vis_base", "wrf_mos_vis_lagged"
+)
 results <- list()
 
 calc_r2 <- function(pred, obs) {
