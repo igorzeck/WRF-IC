@@ -1,4 +1,4 @@
-# Script para gerar métricas de classificação (Nevoeiro: vis <= 1000m) comparando todos os modelos
+# Script para gerar métricas de classificação (Nevoeiro: vis <= 3000m) comparando todos os modelos
 # de visibilidade avaliados (GFS, WRF, WRF MOS, WRF MOS Lagged e Perfect Prog)
 
 library(tidyverse)
@@ -18,7 +18,7 @@ metar_obs <- metar_raw %>%
          datetime <= as.POSIXct("2026-06-28 00:00:00", tz = "UTC")) %>%
   mutate(
     obs_vis = visibility,
-    obs_fog = ifelse(visibility <= 1000, 1, 0)
+    obs_fog = ifelse(visibility <= 3000, 1, 0)
   ) %>%
   select(datetime, obs_vis, obs_fog)
 
@@ -130,10 +130,10 @@ wrf_mos_raw$perf_prog_class_lgb_prob <- predict(class_lgb, X_mat_base)
 # Binarizar:
 wrf_mos_df <- wrf_mos_raw %>% 
   mutate(
-    fog_wrf_mos_base = ifelse(wrf_mos_vis_base <= 1000, 1, 0),
-    fog_wrf_mos_lagged = ifelse(wrf_mos_vis_lagged <= 1000, 1, 0),
-    fog_perf_prog_lgb = ifelse(perf_prog_vis_lgb <= 1000, 1, 0),
-    fog_perf_prog_rf = ifelse(perf_prog_vis_rf <= 1000, 1, 0),
+    fog_wrf_mos_base = ifelse(wrf_mos_vis_base <= 3000, 1, 0),
+    fog_wrf_mos_lagged = ifelse(wrf_mos_vis_lagged <= 3000, 1, 0),
+    fog_perf_prog_lgb = ifelse(perf_prog_vis_lgb <= 3000, 1, 0),
+    fog_perf_prog_rf = ifelse(perf_prog_vis_rf <= 3000, 1, 0),
     fog_perf_prog_class = ifelse(perf_prog_class_lgb_prob >= 0.5, 1, 0) # threshold em 50%
   ) %>%
   select(datetime, starts_with("fog_"))
@@ -144,10 +144,10 @@ df_eval <- metar_obs %>%
   inner_join(wrf_mos_df, by = "datetime") %>%
   left_join(gfs_df, by = "datetime") %>%
   mutate(
-    fog_gfs_vis = ifelse(gfs_vis <= 1000, 1, 0),
-    fog_gfs_koschmieder = ifelse(gfs_koschmieder <= 1000, 1, 0),
-    fog_wrf_native_vis = ifelse(wrf_native_vis <= 1000, 1, 0),
-    fog_wrf_koschmieder = ifelse(wrf_koschmieder <= 1000, 1, 0)
+    fog_gfs_vis = ifelse(gfs_vis <= 3000, 1, 0),
+    fog_gfs_koschmieder = ifelse(gfs_koschmieder <= 3000, 1, 0),
+    fog_wrf_native_vis = ifelse(wrf_native_vis <= 3000, 1, 0),
+    fog_wrf_koschmieder = ifelse(wrf_koschmieder <= 3000, 1, 0)
   )
 
 # 6. Calcular Métricas de Classificação (Nevoeiro vs Sem Nevoeiro)

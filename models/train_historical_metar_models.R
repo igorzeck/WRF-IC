@@ -91,9 +91,9 @@ message("Modelo de regressão salvo.")
 
 ## 3. Treino do Modelo de Classificação ----
 message("\n--- Treinando Modelo de Classificação ---")
-# Criar label de nevoeiro (visibilidade <= 1000 metros)
+# Criar label de nevoeiro (visibilidade <= 3000 metros)
 df_class <- df_clean %>%
-  mutate(fog = ifelse(vis <= 1000, 1, 0)) %>%
+  mutate(fog = ifelse(vis <= 3000, 1, 0)) %>%
   select(-vis)
 
 # Resolver desbalanceamento extremo usando superamostragem
