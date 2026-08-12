@@ -115,7 +115,6 @@ p_mae <- ggplot(mae_by_lead, aes(x=lead_time)) +
   geom_line(aes(y=MOS_MAE, color="WRF MOS Lagged"), size=1.2) +
   geom_point(aes(y=MOS_MAE, color="WRF MOS Lagged"), size=2) +
   scale_color_manual(values=c("Autoregressivo (AR)"="red", "WRF MOS Lagged"="blue")) +
-  labs(title="MAE por Horizonte de Previsão (Lead Time)", x="Horas a Frente (1 a 24h)", y="MAE (metros)", color="Modelo") +
   theme_minimal(base_size=14)
 
 ggsave("resources/mae_lead_time_ar_vs_mos.png", plot=p_mae, width=10, height=6, bg="white")
@@ -125,7 +124,6 @@ p_ts <- ggplot(df_eval, aes(x=datetime)) +
   geom_line(aes(y=ar_pred, color="AR Forecast (24h)"), alpha=0.8, size=1) +
   geom_line(aes(y=mos_pred, color="WRF MOS Lagged (144h)"), alpha=0.8, size=1) +
   scale_color_manual(values=c("METAR Real"="black", "AR Forecast (24h)"="red", "WRF MOS Lagged (144h)"="blue")) +
-  labs(title="Série Temporal: AR Diário vs WRF Contínuo", x="Data", y="Visibilidade (m)", color="Modelo") +
   theme_minimal(base_size=14)
 
 ggsave("resources/ts_ar_vs_mos.png", plot=p_ts, width=12, height=6, bg="white")
