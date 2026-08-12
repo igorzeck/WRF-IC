@@ -136,8 +136,6 @@ p <- ggplot(plot_df, aes(x = datetime, y = Absolute_Error, color = Method)) +
   scale_linetype_manual(name = "", values = c("Média da Visibilidade" = "dashed")) +
   scale_y_continuous(labels = scales::comma_format(suffix = " m")) +
   labs(
-    title = "Erro Absoluto: Formulação Física vs Machine Learning",
-    subtitle = "WRF e GFS a cada 3h (22 a 28 de Junho)",
     x = "Data",
     y = "Erro Absoluto (m)",
     color = "Método"
@@ -145,7 +143,7 @@ p <- ggplot(plot_df, aes(x = datetime, y = Absolute_Error, color = Method)) +
   theme_minimal(base_size = 14) +
   theme(legend.position = "bottom")
 
-img_path <- "resources/koschmieder_vis_error_3h.png"
+img_path <- "resources/koschmieder_vs_mos_5_day.png"
 ggsave(img_path, plot = p, width = 11, height = 6, dpi = 300)
 
 message("Gráfico salvo em: ", img_path)
