@@ -3,15 +3,8 @@ library(tidyverse)
 library(lubridate)
 library(lightgbm)
 
-# 1. Reverter classificação
-csv_class <- "resources/metricas_classificacao_modelos.csv"
-if (file.exists(csv_class)) {
-  df_c <- read_csv(csv_class, show_col_types = FALSE)
-  df_c <- df_c %>% filter(Model != "fog_autoregressive_24h_avg")
-  write_csv(df_c, csv_class)
-}
 
-# 2. Calcular previsões do AR
+# 1. Calcular previsões do AR
 metar_raw <- read_csv("datasets/metar_SBGL_2026.csv", show_col_types = FALSE) %>%
   mutate(datetime = as.POSIXct(datetime, tz = "UTC")) %>%
   arrange(datetime) %>%
@@ -51,7 +44,7 @@ for (init_t in init_times) {
 }
 ar_preds <- ar_preds %>% group_by(datetime) %>% summarise(ar_pred = mean(ar_pred)) %>% ungroup()
 
-# 3. Calcular e salvar métricas de regressão
+# 2. Calcular e salvar métricas de regressão
 df_eval <- metar_raw %>%
   select(datetime, obs_vis = visibility) %>%
   inner_join(ar_preds, by="datetime") %>%
