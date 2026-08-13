@@ -1,0 +1,28 @@
+--- WRF MOS Full Physics (25 Variáveis WRF x METAR) ---
+MOS Base CV RMSE: 1919.661 
+MOS Lagged CV RMSE: 1731.988 
+
+Top 20 Features (Modelo Lagged):
+                                     Feature       Gain       Cover  Frequency
+                                      <char>      <num>       <num>      <num>
+ 1:        mean_sea_level_pressure_eta_model 0.24689847 0.042891556 0.03202967
+ 2:               mid_level_cloud_cover_lag3 0.08602885 0.014264851 0.01247471
+ 3:   mean_sea_level_pressure_eta_model_lag3 0.08428890 0.044475941 0.03843560
+ 4:                       precipitable_water 0.08057705 0.024649576 0.02764666
+ 5:                  precipitable_water_lag3 0.07955447 0.026589639 0.02596089
+ 6:                         temperature_htgl 0.03034430 0.016086354 0.02157788
+ 7:               dew_point_temperature_htgl 0.02987154 0.028114744 0.03000674
+ 8:                          wind_speed_lag6 0.02871141 0.021302968 0.02494943
+ 9:                   relative_humidity_hybl 0.02655242 0.023129860 0.02090357
+10:            u_component_of_wind_htgl_lag6 0.02158770 0.010104494 0.01314902
+11:               mid_level_cloud_cover_lag6 0.01995504 0.013381045 0.01449764
+12:                          wind_speed_lag3 0.01928736 0.036031278 0.02966959
+13:                        total_cloud_cover 0.01915098 0.018861722 0.02461227
+14:            u_component_of_wind_spdy_lag6 0.01868363 0.011387091 0.01382333
+15:      total_column_integrated_cloud_water 0.01833010 0.024875917 0.02225219
+16:                 v_component_of_wind_htgl 0.01662912 0.013817559 0.02191504
+17:            v_component_of_wind_htgl_lag6 0.01608272 0.015525892 0.02157788
+18: total_column_integrated_cloud_water_lag6 0.01427456 0.027274050 0.02124073
+19:          dew_point_temperature_htgl_lag3 0.01359665 0.029273393 0.02258935
+20:                   total_cloud_cover_lag6 0.01338730 0.008870398 0.01416049
+                                     Feature       Gain       Cover  Frequency
