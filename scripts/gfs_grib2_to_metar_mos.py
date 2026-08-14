@@ -88,7 +88,10 @@ def main():
         temp_c = tmp_k - 273.15 if tmp_k is not None else None
         dpt_c = dpt_k - 273.15 if dpt_k is not None else None
         pressao_hpa = prmsl_pa / 100.0 if prmsl_pa is not None else None
-        
+
+        # RH passa a ser entre 0 e 1
+        rh /= 100
+                
         vel_vento = None
         dir_vento = None
         if u_wind is not None and v_wind is not None:
