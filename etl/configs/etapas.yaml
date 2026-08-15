@@ -2,25 +2,25 @@ arquivos_gerados:
   geogrid: 0
   gfs: 9
   gfs_csv: 1
-  metgrid: 0
+  metgrid: 36
   ungrib: 0
-  wrfinput: 0
+  wrfinput: 4
   wrfout: 0
   wrfout_csv: 0
   wrfrst: 0
 data_final: '2026-06-30'
 data_inicial: '2026-06-01'
 data_mais_recente: '2026-06-01'
-etapa: 2
+etapa: 0
 lat: -22.804943908755842
 long: -43.256455001858306
 tamanho_arquivos:
   geogrid: 0
   gfs: 4824608937
   gfs_csv: 3104
-  metgrid: 0
+  metgrid: 103277599
   ungrib: 0
-  wrfinput: 0
+  wrfinput: 31753740
   wrfout: 0
   wrfout_csv: 0
   wrfrst: 0
@@ -29,7 +29,7 @@ tempo_execucao:
   convertendo_dados_wrf_para_csv: 0
   extracao_dados_gfs: 141.756417
   geogrid: 0
-  metgrid: 0
-  real: 0
+  metgrid: 341.487502
+  real: 11.334687
   ungrib: 0
   wrf: 0

@@ -1,5 +1,5 @@
 &afwa
-    afwa_ano_fimg_opt = 1
+    afwa_diag_opt = 1
     afwa_vis_opt = 1
 /
 
@@ -89,10 +89,10 @@
 &time_control
     auxinput4_inname = 'wrflowinp_d<domain>'
     auxinput4_interval = 10800, 10800, 10800, 10800
-    end_day = '_dia_fim_', '_dia_fim_', '_dia_fim_', '_dia_fim_'
-    end_hour = '_hora_fim_', '_hora_fim_', '_hora_fim_', '_hora_fim_'
-    end_month = '_mes_fim_', '_mes_fim_', '_mes_fim_', '_mes_fim_'
-    end_year = '_ano_fim_', '_ano_fim_', '_ano_fim_', '_ano_fim_'
+    end_day = _dia_fim_, _dia_fim_, _dia_fim_, _dia_fim_
+    end_hour = _hora_fim_, _hora_fim_, _hora_fim_, _hora_fim_
+    end_month = _mes_fim_, _mes_fim_, _mes_fim_, _mes_fim_
+    end_year = _ano_fim_, _ano_fim_, _ano_fim_, _ano_fim_
     frames_per_outfile = 1, 1, 1, 1
     history_interval = 60, 60, 60, 60
     input_from_file = .true., .true., .true., .true.
@@ -104,12 +104,12 @@
     io_form_restart = 2
     restart = .false.
     restart_interval = 7200
-    run_days = '_qte_dias_'
-    run_hours = '_qte_horas_'
-    run_minutes = '_qte_minutos_'
-    run_seconds = '_qte_segundos_'
-    start_day = '_dia_inicio_', '_dia_inicio_', '_dia_inicio_', '_dia_inicio_'
-    start_hour = '_hora_inicio_', '_hora_inicio_', '_hora_inicio_', '_hora_inicio_'
-    start_month = '_mes_inicio_', '_mes_inicio_', '_mes_inicio_', '_mes_inicio_'
-    start_year = '_ano_inicio_', '_ano_inicio_', '_ano_inicio_', '_ano_inicio_'
+    run_days = _qte_dias_
+    run_hours = _qte_horas_
+    run_minutes = _qte_minutos_
+    run_seconds = _qte_segundos_
+    start_day = _dia_inicio_, _dia_inicio_, _dia_inicio_, _dia_inicio_
+    start_hour = _hora_inicio_, _hora_inicio_, _hora_inicio_, _hora_inicio_
+    start_month = _mes_inicio_, _mes_inicio_, _mes_inicio_, _mes_inicio_
+    start_year = _ano_inicio_, _ano_inicio_, _ano_inicio_, _ano_inicio_
 /

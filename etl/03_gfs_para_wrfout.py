@@ -260,7 +260,6 @@ def rodar_geogrid() -> bool:
     except subprocess.CalledProcessError as e:
         print(f"[Erro] Falha ao rodar Geogrid em {WPS_DIR}!")
         print("Return code:", e.returncode)
-        print(f"STDERR: {e.stderr}")
         return False
 
 def rodar_link_grib(dir_grib: str) -> bool:
@@ -290,7 +289,6 @@ def rodar_link_grib(dir_grib: str) -> bool:
     except subprocess.CalledProcessError as e:
         print(f"[Erro] Falha ao rodar Link Grib para {dir_grib}!")
         print("Return code:", e.returncode)
-        print(f"STDERR: {e.stderr}")
         return False
 
 def rodar_ungrib() -> bool:
@@ -302,6 +300,7 @@ def rodar_ungrib() -> bool:
         print("[Aviso] Deletando arquivos \"intermediários\" existentes no WPS_DIR antes de rodar o Ungrib...")
         for arquivo in intermediate_files:
             arquivo.unlink()
+    
     print("\nRodando Ungrib...")
     try:
         subprocess.run(
@@ -324,20 +323,86 @@ def rodar_ungrib() -> bool:
     except subprocess.CalledProcessError as e:
         print(f"[Erro] Falha ao rodar Ungrib em {WPS_DIR}!")
         print("Return code:", e.returncode)
-        print(f"STDERR: {e.stderr}")
         return False
 
 def rodar_metgrid() -> bool:
     """Roda o Metgrid do WPS."""
+    intermediate_files = list(Path(WPS_DIR).glob("met_em*"))
+
+    if intermediate_files:
+        print("[Aviso] Deletando arquivos met_em* existentes no WPS_DIR antes de rodar o Metgrid...")
+        for arquivo in intermediate_files:
+            arquivo.unlink()
+    
     print("\nRodando Metgrid...")
-    # Aqui você chamaria o comando do Metgrid, por exemplo:
-    # os.system("./metgrid.exe")
-    # Para fins de demonstração, vamos apenas simular a execução.
-    import time
-    time.sleep(2)  # Simula tempo de execução
-    arquivos_gerados['metgrid'] += 1
-    tamanho_arquivos['metgrid'] += 0 # Exemplo: 1 MB
-    return True
+    try:
+        subprocess.run(
+            ["./metgrid.exe"],
+            cwd=WPS_DIR,
+            capture_output=False,
+            text=True,
+            check=True
+        )
+
+        print(f"\n[Sucesso] Metgrid concluído em {WPS_DIR}!")
+
+        # Contagem do número e tamanho dos arquivos gerados pelo Metgrid
+        arquivos_metgrid = list(Path(WPS_DIR).glob("met_em*"))
+        arquivos_gerados['metgrid'] += len(arquivos_metgrid) # Em geral, são n * horas arquivos para n domínios
+        tamanho_arquivos['metgrid'] += sum(f.stat().st_size for f in arquivos_metgrid)
+
+        return True
+
+    except subprocess.CalledProcessError as e:
+        print(f"[Erro] Falha ao rodar Metgrid em {WPS_DIR}!")
+        print("Return code:", e.returncode)
+        return False
+
+# --- WRF ---
+def rodar_real() -> bool:
+    """Roda o Real do WRF."""
+    intermediate_files = list(Path(WRF_DIR).glob("wrfinput*")) + list(Path(WRF_DIR).glob("wrfbdy*")) + list(Path(WRF_DIR).glob("met_em*"))
+
+    if intermediate_files:
+        print("[Aviso] Deletando arquivos wrfinput*, wrfbdy* e met_em* existentes no WRF_DIR antes de rodar o Real...")
+        for arquivo in intermediate_files:
+            arquivo.unlink()
+
+    # NOTE: Necessário linkar (ln -sf) arquivos met_em* do WPS para o diretório do WRF antes de rodar o Real
+    print("Linkando arquivos met_em* do WPS para o diretório do WRF...")
+    met_em_files = list(Path(WPS_DIR).glob("met_em*"))
+    for met_em_file in met_em_files:
+        link_path = Path(WRF_DIR) / met_em_file.name
+        if not link_path.exists():
+            link_path.symlink_to(met_em_file)
+
+    print("\nRodando Real...")
+
+    try:
+        subprocess.run(
+            ["./real.exe"],
+            cwd=WRF_DIR,
+            capture_output=False,
+            text=True,
+            check=True
+        )
+
+        print(f"\n[Sucesso] Real concluído em {WRF_DIR}!")
+
+        # Contagem do número e tamanho dos arquivos gerados pelo Real
+        # NOTE: Deconsidera o arquivo wrfbdy_d01
+        arquivos_real = list(Path(WRF_DIR).glob("wrfinput*"))
+        arquivos_gerados['wrfinput'] += len(arquivos_real) # Em geral, são n arquivos para n domínios
+        tamanho_arquivos['wrfinput'] += sum(f.stat().st_size for f in arquivos_real)
+
+        return True
+
+    except subprocess.CalledProcessError as e:
+        print(f"[Erro] Falha ao rodar Real em {WRF_DIR}!")
+        print("Return code:", e.returncode)
+        return False
+
+
 
 def main():
     global tempo_execucao, arquivos_gerados, tamanho_arquivos
@@ -409,6 +474,8 @@ def main():
             preencher_namelist_input(data_atual, data_atual + dt.timedelta(days=1))
             print("FIM ETAPA 0: Download dos dados GFS\n\n")
 
+        # preencher_namelist_input(data_atual, data_atual + dt.timedelta(days=1))
+        # exit(0)
         # - Etapa 1: Conversão GFS GRIB2 -> CSV (Passo 1.1) -
         if etapas.get('etapa') == 1:
             print("INI ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
@@ -454,8 +521,7 @@ def main():
             print(f"\nFIM ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
 
         if etapas.get('etapa') == 2:
-            print("INI ETAPA 2: Processamento WPS (Geogrid, Ungrib, Metgrid)\n")
-            print(f"[Aguardando Etapa 2] CSV do GFS para {data_atual} está pronto.")
+            print("INI ETAPA 2: Geogrid\n")
 
             sucesso = True
 
@@ -466,43 +532,99 @@ def main():
 
                 if sucesso:
                     print(f"[Sucesso] Geogrid concluído para {data_atual}!")
+
+                    etapas['etapa'] = 3
+
+                    update_etapas(etapas)
                 else:
                     print(f"[Erro] Falha ao rodar Geogrid para {data_atual}!")
                     break
-            
+            else:
+                print(f"[Aviso] Pulando Geogrid para {data_atual} (já foi rodado na primeira run).")
+            print("\nFIM ETAPA 2: Geogrid\n")
+
+        if etapas.get('etapa') == 3:
+            print("INI ETAPA 3: Link Grib\n")
             sucesso = rodar_link_grib(dir_grib=str(DIR_GFS / data_atual.strftime('%Y%m%d')))
 
             if sucesso:
                 print(f"[Sucesso] Link Grib concluído para {data_atual}!")
+                # TODO: Talvez seja interessante criar uma função para atualizar etapas, tempo_execucao, arquivos_gerados e tamanho_arquivos de forma mais organizada
+                etapas['etapa'] = 4
+
+                update_etapas(etapas)
             else:
                 print(f"[Erro] Falha ao rodar Link Grib para {data_atual}!")
                 break
-
+            print("\nFIM ETAPA 3: Link Grib\n")
+        
+        if etapas.get('etapa') == 4:
+            print("INI ETAPA 4: Ungrib\n")
             tempo_execucao['ungrib'] = dt.datetime.now()
             sucesso = rodar_ungrib()
             tempo_execucao['ungrib'] = (dt.datetime.now() - tempo_execucao['ungrib']).total_seconds()
             if sucesso:
                 print(f"[Sucesso] Ungrib concluído para {data_atual}!")
+                etapas['etapa'] = 5
+
+                update_etapas(etapas)
             else:
                 print(f"[Erro] Falha ao rodar Ungrib para {data_atual}!")
                 break
+            print("\nFIM ETAPA 4: Ungrib\n")
 
+        if etapas.get('etapa') == 5:
+            print("INI ETAPA 5: Metgrid\n")
             tempo_execucao['metgrid'] = dt.datetime.now()
             sucesso = rodar_metgrid()
             tempo_execucao['metgrid'] = (dt.datetime.now() - tempo_execucao['metgrid']).total_seconds()
             if sucesso:
+                # TODO: Função para mensagens com tabulação, cores e prefixos de sucesso/erro/aviso
                 print(f"[Sucesso] Metgrid concluído para {data_atual}!")
+                etapas['etapa'] = 6
+
+                update_etapas(etapas)
             else:
                 print(f"[Erro] Falha ao rodar Metgrid para {data_atual}!")
                 break
 
-            print("\nFIM ETAPA 2: Processamento WPS\n")
-            break  # Placeholder para a próxima etapa
+            print("\nFIM ETAPA 5: Metgrid\n")
+        
+        if etapas.get('etapa') == 6:
+            print("INI ETAPA 6: Real (WRF)\n")
+            tempo_execucao['real'] = dt.datetime.now()
+            sucesso = rodar_real()
+            tempo_execucao['real'] = (dt.datetime.now() - tempo_execucao['real']).total_seconds()
+            if sucesso:
+                print(f"[Sucesso] Real concluído para {data_atual}!")
+                etapas['etapa'] = 7
 
-        if etapas.get('etapa') == 5:
+                update_etapas(etapas)
+            else:
+                print(f"[Erro] Falha ao rodar Real para {data_atual}!")
+                break
+            print("\nFIM ETAPA 6: Real (WRF)\n")
+        
+        if etapas.get('etapa') == 7:
+            print("INI ETAPA 7: WRF\n")
+            tempo_execucao['wrf'] = dt.datetime.now()
+            sucesso = rodar_wrf()
+            tempo_execucao['wrf'] = (dt.datetime.now() - tempo_execucao['wrf']).total_seconds()
+            if sucesso:
+                print(f"[Sucesso] WRF concluído para {data_atual}!")
+                etapas['etapa'] = 8
+
+                update_etapas(etapas)
+            else:
+                print(f"[Erro] Falha ao rodar WRF para {data_atual}!")
+                break
+            print("\nFIM ETAPA 7: WRF\n")
+
+        if etapas.get('etapa') >= 8:
             print(f"[Concluído] ETL GFS para {data_atual} finalizado com sucesso!")
             etapas['etapa'] = 0
             update_etapas(etapas)
+        break  # Para fins de teste
 
 if __name__ == "__main__":
     main()
