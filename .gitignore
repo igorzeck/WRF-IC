@@ -1,4 +1,8 @@
 .*
+# - RStudio -
+WRF-IC.Rproj
+# - Temporários/Obsoletos -
+scripts/
 # - Recursos -
 *.nc
 *.png
