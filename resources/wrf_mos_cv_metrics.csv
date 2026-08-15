@@ -1,0 +1,3 @@
+Model,CV_RMSE,Validation_Method,Folds
+WRF_MOS_Base,2369.625,Cross-Validation,5
+WRF_MOS_Lagged,2101.024,Cross-Validation,5
