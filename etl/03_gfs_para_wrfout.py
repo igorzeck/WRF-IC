@@ -37,7 +37,7 @@ DIR_GFS = DIR_DADOS / "gfs"
 GDEX_BASE_URL = "https://osdf-director.osg-htc.org/ncar/gdex/d084001"
 
 # Globais
-total_tempo_execucao = {
+tempo_execucao = {
     "extracao_dados_gfs": 0,
     "conversao_dados_gfs_para_csv": 0,
     "geogrid": 0,
@@ -47,7 +47,7 @@ total_tempo_execucao = {
     "wrf": 0,
     "convertendo_dados_wrf_para_csv": 0
 }
-total_arquivos_gerados = {
+arquivos_gerados = {
     "gfs": 0,
     "gfs_csv": 0,
     "geogrid": 0,
@@ -58,7 +58,7 @@ total_arquivos_gerados = {
     "wrfout": 0,
     "wrfout_csv": 0
 }
-total_tamanho_arquivos = {
+tamanho_arquivos = {
     "gfs": 0,
     "gfs_csv": 0,
     "geogrid": 0,
@@ -90,14 +90,14 @@ def carregar_etapas() -> dict:
 
 def update_etapas(etapas: dict):
     """Atualiza o arquivo etapas.yaml mantendo datas no formato YYYY-MM-DD."""
-    global total_tempo_execucao, total_arquivos_gerados, total_tamanho_arquivos
+    global tempo_execucao, arquivos_gerados, tamanho_arquivos
 
     ARQ_ETAPAS.parent.mkdir(parents=True, exist_ok=True)
 
     # NOTE: Fica mais fácil atribuir os valores globais ao dicionário antes de salvar do que ir atribuindo direto ao dicionário
-    etapas['total_tempo_execucao'] = total_tempo_execucao
-    etapas['total_arquivos_gerados'] = total_arquivos_gerados
-    etapas['total_tamanho_arquivos'] = total_tamanho_arquivos
+    etapas['tempo_execucao'] = tempo_execucao
+    etapas['arquivos_gerados'] = arquivos_gerados
+    etapas['tamanho_arquivos'] = tamanho_arquivos
 
     etapas_para_salvar = {}
     for k, v in etapas.items():
@@ -132,7 +132,7 @@ def baixar_arquivo(url: str, destino: Path) -> bool:
 
     print(f"  [Baixando] {destino.name}...", end="\r")
     try:
-        global total_arquivos_gerados, total_tamanho_arquivos
+        global arquivos_gerados, tamanho_arquivos
 
         req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req) as response, open(destino, "wb") as out_file:
@@ -140,8 +140,8 @@ def baixar_arquivo(url: str, destino: Path) -> bool:
         
         print(f"  [Concluído] {destino.name} ({destino.stat().st_size / (1024*1024):.1f} MB)")
 
-        total_arquivos_gerados['gfs'] += 1
-        total_tamanho_arquivos['gfs'] += destino.stat().st_size
+        arquivos_gerados['gfs'] += 1
+        tamanho_arquivos['gfs'] += destino.stat().st_size
 
         return True
     except Exception as e:
@@ -216,8 +216,51 @@ def preencher_namelist_input(data_inicial: dt.date, data_final: dt.date):
     with open(namelist_path, "w", encoding="utf-8") as file:
         file.write(content)
 
+def rodar_link_grib(dir_grib: str) -> bool:
+    """Roda o Link Grib do WPS."""
+    print(f"\nRodando Link Grib para {dir_grib}...")
+    import time
+    time.sleep(2)  # Simula tempo de execução
+    return True
+
+def rodar_geogrid() -> bool:
+    """Roda o Geogrid do WPS."""
+    print("\nRodando Geogrid...")
+    # Aqui você chamaria o comando do Geogrid, por exemplo:
+    # os.system("./geogrid.exe")
+    # Para fins de demonstração, vamos apenas simular a execução.
+    import time
+    time.sleep(2)  # Simula tempo de execução
+    arquivos_gerados['geogrid'] += 1
+    tamanho_arquivos['geogrid'] += 0 # Exemplo: 1 MB
+    return True
+
+def rodar_ungrib() -> bool:
+    """Roda o Ungrib do WPS."""
+    print("\nRodando Ungrib...")
+    # Aqui você chamaria o comando do Ungrib, por exemplo:
+    # os.system("./ungrib.exe")
+    # Para fins de demonstração, vamos apenas simular a execução.
+    import time
+    time.sleep(2)  # Simula tempo de execução
+    arquivos_gerados['ungrib'] += 1
+    tamanho_arquivos['ungrib'] += 0 # Exemplo: 1 MB
+    return True
+
+def rodar_metgrid() -> bool:
+    """Roda o Metgrid do WPS."""
+    print("\nRodando Metgrid...")
+    # Aqui você chamaria o comando do Metgrid, por exemplo:
+    # os.system("./metgrid.exe")
+    # Para fins de demonstração, vamos apenas simular a execução.
+    import time
+    time.sleep(2)  # Simula tempo de execução
+    arquivos_gerados['metgrid'] += 1
+    tamanho_arquivos['metgrid'] += 0 # Exemplo: 1 MB
+    return True
+
 def main():
-    global total_tempo_execucao, total_arquivos_gerados, total_tamanho_arquivos
+    global tempo_execucao, arquivos_gerados, tamanho_arquivos
 
     etapas = carregar_etapas()
 
@@ -226,16 +269,19 @@ def main():
     lat_alvo = etapas.get("lat", -22.804943908755842)
     lon_alvo = etapas.get("long", -43.256455001858306)
 
-    total_arquivos_gerados = etapas.get('total_arquivos_gerados', total_arquivos_gerados)
-    total_tamanho_arquivos = etapas.get('total_tamanho_arquivos', total_tamanho_arquivos)
-    total_tempo_execucao = etapas.get('total_tempo_execucao', total_tempo_execucao)
+    arquivos_gerados = etapas.get('arquivos_gerados', arquivos_gerados)
+    tamanho_arquivos = etapas.get('tamanho_arquivos', tamanho_arquivos)
+    tempo_execucao = etapas.get('tempo_execucao', tempo_execucao)
 
     str_mais_recente = etapas.get("data_mais_recente")
     data_mais_recente = parse_data(str_mais_recente) if str_mais_recente else data_inicial
 
     # Somente se não for a primeira run
     if (data_mais_recente != data_inicial) and (data_mais_recente < data_final):
+        primeira_run = False
         print(f"[Aviso] Continuando ETL do GFS a partir de {data_mais_recente} até {data_final}.")
+    else:
+        primeira_run = True
 
     print(f"ETL GFS iniciado | Período: {data_inicial} até {data_final} | Progresso atual: {data_mais_recente}")
 
@@ -265,9 +311,9 @@ def main():
         # - Etapa 0: Download dos dados GFS -
         if etapas.get('etapa', 0) == 0:
             print("ETAPA 0: Download dos dados GFS\n")
-            total_tempo_execucao['extracao_dados_gfs'] = dt.datetime.now()
+            tempo_execucao['extracao_dados_gfs'] = dt.datetime.now()
             sucesso = extrair_dados_gfs(data_atual, hora_run=0, forecast_inicio=0, forecast_fim=24)
-            total_tempo_execucao['extracao_dados_gfs'] = (dt.datetime.now() - total_tempo_execucao['extracao_dados_gfs']).total_seconds()
+            tempo_execucao['extracao_dados_gfs'] = (dt.datetime.now() - tempo_execucao['extracao_dados_gfs']).total_seconds()
 
             if sucesso:
                 print(f"[Sucesso] Download GFS finalizado com sucesso para {data_atual}! Continuando para etapa 1.")
@@ -292,7 +338,7 @@ def main():
 
             print(f"--- Convertendo GFS GRIB2 para CSV: {data_atual} ---\n")
             try:
-                total_tempo_execucao['conversao_dados_gfs_para_csv'] = dt.datetime.now()
+                tempo_execucao['conversao_dados_gfs_para_csv'] = dt.datetime.now()
 
                 if Path(arq_csv).exists():
                     print(f"[Existente] CSV já existe para {data_atual}: {arq_csv}!")
@@ -302,10 +348,10 @@ def main():
                     df = processar_diretorio_gfs(dir_grib_dia, lat_alvo, lon_alvo, arq_csv)
 
                     if not df.empty:
-                        total_arquivos_gerados['gfs_csv'] += 1
-                        total_tamanho_arquivos['gfs_csv'] += Path(arq_csv).stat().st_size
+                        arquivos_gerados['gfs_csv'] += 1
+                        tamanho_arquivos['gfs_csv'] += Path(arq_csv).stat().st_size
                 
-                total_tempo_execucao['conversao_dados_gfs_para_csv'] = (dt.datetime.now() - total_tempo_execucao['conversao_dados_gfs_para_csv']).total_seconds()
+                tempo_execucao['conversao_dados_gfs_para_csv'] = (dt.datetime.now() - tempo_execucao['conversao_dados_gfs_para_csv']).total_seconds()
 
                 if not df.empty:
                     print(f"\n[Sucesso] CSV gerado com sucesso para {data_atual}: {arq_csv}")
@@ -332,6 +378,46 @@ def main():
         if etapas.get('etapa') == 2:
             print("INI ETAPA 2: Processamento WPS (Geogrid, Ungrib, Metgrid)\n")
             print(f"[Aguardando Etapa 2] CSV do GFS para {data_atual} está pronto.")
+
+            sucesso = True
+
+            if primeira_run:
+                tempo_execucao['geogrid'] = dt.datetime.now()
+                sucesso = rodar_geogrid()
+                tempo_execucao['geogrid'] = (dt.datetime.now() - tempo_execucao['geogrid']).total_seconds()
+
+                if sucesso:
+                    print(f"[Sucesso] Geogrid concluído para {data_atual}!")
+                else:
+                    print(f"[Erro] Falha ao rodar Geogrid para {data_atual}!")
+                    break
+            
+            sucesso = rodar_link_grib(dir_grib=str(DIR_GFS / data_atual.strftime('%Y%m%d')))
+
+            if sucesso:
+                print(f"[Sucesso] Link Grib concluído para {data_atual}!")
+            else:
+                print(f"[Erro] Falha ao rodar Link Grib para {data_atual}!")
+                break
+
+            tempo_execucao['ungrib'] = dt.datetime.now()
+            sucesso = rodar_ungrib()
+            tempo_execucao['ungrib'] = (dt.datetime.now() - tempo_execucao['ungrib']).total_seconds()
+            if sucesso:
+                print(f"[Sucesso] Ungrib concluído para {data_atual}!")
+            else:
+                print(f"[Erro] Falha ao rodar Ungrib para {data_atual}!")
+                break
+
+            tempo_execucao['metgrid'] = dt.datetime.now()
+            sucesso = rodar_metgrid()
+            tempo_execucao['metgrid'] = (dt.datetime.now() - tempo_execucao['metgrid']).total_seconds()
+            if sucesso:
+                print(f"[Sucesso] Metgrid concluído para {data_atual}!")
+            else:
+                print(f"[Erro] Falha ao rodar Metgrid para {data_atual}!")
+                break
+
             print("\nFIM ETAPA 2: Processamento WPS\n")
             break  # Placeholder para a próxima etapa
 
