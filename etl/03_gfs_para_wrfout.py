@@ -19,6 +19,9 @@
 # - O script deve ser executado em um ambiente Linux com WRF e WPS instalados e configurados corretamente.
 # - O script utiliza o GDEX (NCAR ds084.1 / d084001) para baixar os dados GFS.
 # - O script não calcula o tamanho dos arquivos de link, apenas arquivos **criados** pelo WPS, WRF e CSVs.
+# - O caminho do working directory do WPS e WRF deve ser definido no arquivo configs/wd_dir.txt.
+#   - wd_dir/WPS e wd_dir/WRF devem existir e conter os executáveis do WPS e WRF, respectivamente.
+# - O WRF é rodado a partir do diretório test/em_real/WRF dentro do working directory definido.
 # ======
 # ---- Setup ----
 import os
@@ -42,6 +45,7 @@ DIR_GFS = DIR_DADOS / "gfs"
 
 WD_DIR = Path((DIR_ETL / Path("configs/wd_dir.txt")).read_text().strip())
 WPS_DIR = WD_DIR / "WPS"
+WRF_DIR = WD_DIR / "test/em_real/WRF"
 
 # URL base do repositório GDEX (NCAR ds084.1 / d084001)
 GDEX_BASE_URL = "https://osdf-director.osg-htc.org/ncar/gdex/d084001"
@@ -190,7 +194,7 @@ def preencher_namelist_wps(data_inicial: dt.date, data_final: dt.date):
     content = content.replace("_wps_data_inicial_", data_inicial.strftime("%Y-%m-%d_%H:%M:%S"))
     content = content.replace("_wps_data_final_", data_final.strftime("%Y-%m-%d_%H:%M:%S"))
 
-    namelist_path = DIR_ETL / "namelist.wps"
+    namelist_path = WPS_DIR / "namelist.wps"
 
     with open(namelist_path, "w", encoding="utf-8") as file:
         file.write(content)
@@ -221,10 +225,41 @@ def preencher_namelist_input(data_inicial: dt.date, data_final: dt.date):
     content = content.replace("_qte_minutos_", str((data_final - data_inicial).days * 24 * 60))
     content = content.replace("_qte_segundos_", str((data_final - data_inicial).days * 24 * 60 * 60))
 
-    namelist_path = DIR_ETL / "namelist.input"
+    namelist_path = WRF_DIR / "namelist.input"
 
     with open(namelist_path, "w", encoding="utf-8") as file:
         file.write(content)
+
+
+def rodar_geogrid() -> bool:
+    """Roda o Geogrid do WPS."""
+    # NOTE: Arquivos geo_em* não são deletados, pois são utilizados em runs futuras: nescessário
+    #       modificar manualmente caso mude alguma configuração do domínio do WRF
+    # NOTE: O output não é suprimido. Em caso de erro, olhe os logs: "log.*" no diretório do WPS
+    print("\nRodando Geogrid...")
+    try:
+        subprocess.run(
+            ["./geogrid.exe"],
+            cwd=WPS_DIR,
+            capture_output=False,
+            text=True,
+            check=True
+        )
+
+        print(f"\n[Sucesso] Geogrid concluído em {WPS_DIR}!")
+
+        # Contagem do número e tamanho dos arquivos gerados pelo Geogrid
+        arquivos_geogrid = list(Path(WPS_DIR).glob("geo_em*"))
+        arquivos_gerados['geogrid'] += len(arquivos_geogrid) # Em geral, são n arquivos para n domínios
+        tamanho_arquivos['geogrid'] += sum(f.stat().st_size for f in arquivos_geogrid)
+
+        return True
+
+    except subprocess.CalledProcessError as e:
+        print(f"[Erro] Falha ao rodar Geogrid em {WPS_DIR}!")
+        print("Return code:", e.returncode)
+        print(f"STDERR: {e.stderr}")
+        return False
 
 def rodar_link_grib(dir_grib: str) -> bool:
     """Roda o Link Grib do WPS."""
@@ -255,18 +290,6 @@ def rodar_link_grib(dir_grib: str) -> bool:
         print("Return code:", e.returncode)
         print(f"STDERR: {e.stderr}")
         return False
-
-def rodar_geogrid() -> bool:
-    """Roda o Geogrid do WPS."""
-    print("\nRodando Geogrid...")
-    # Aqui você chamaria o comando do Geogrid, por exemplo:
-    # os.system("./geogrid.exe")
-    # Para fins de demonstração, vamos apenas simular a execução.
-    import time
-    time.sleep(2)  # Simula tempo de execução
-    arquivos_gerados['geogrid'] += 1
-    tamanho_arquivos['geogrid'] += 0 # Exemplo: 1 MB
-    return True
 
 def rodar_ungrib() -> bool:
     """Roda o Ungrib do WPS."""
