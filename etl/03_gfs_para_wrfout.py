@@ -15,13 +15,15 @@
 # A cada erro ou run bem-sucedido, o script envia um e-mail para o usuário com o status do processo.
 # 
 # ---
-# Observações:
+# IMPORTANTE
+# Considerações (LEIA ANTES DE RODAR O SCRIPT):
 # - O script deve ser executado em um ambiente Linux com WRF e WPS instalados e configurados corretamente.
 # - O script utiliza o GDEX (NCAR ds084.1 / d084001) para baixar os dados GFS.
 # - O script não calcula o tamanho dos arquivos de link, apenas arquivos **criados** pelo WPS, WRF e CSVs.
 # - O caminho do working directory do WPS e WRF deve ser definido no arquivo configs/wd_dir.txt.
 #   - wd_dir/WPS e wd_dir/WRF devem existir e conter os executáveis do WPS e WRF, respectivamente.
-# - O WRF é rodado a partir do diretório test/em_real/WRF dentro do working directory definido.
+# - O WRF é rodado a partir do diretório WRF/test/em_real/ dentro do working directory definido.
+# - A Vtable do WPS deve estar configurado corretamente e linkada no diretório WPS antes de rodar o script.
 # ======
 # ---- Setup ----
 import os
@@ -45,7 +47,7 @@ DIR_GFS = DIR_DADOS / "gfs"
 
 WD_DIR = Path((DIR_ETL / Path("configs/wd_dir.txt")).read_text().strip())
 WPS_DIR = WD_DIR / "WPS"
-WRF_DIR = WD_DIR / "test/em_real/WRF"
+WRF_DIR = WD_DIR / "WRF/test/em_real/"
 
 # URL base do repositório GDEX (NCAR ds084.1 / d084001)
 GDEX_BASE_URL = "https://osdf-director.osg-htc.org/ncar/gdex/d084001"
@@ -263,7 +265,7 @@ def rodar_geogrid() -> bool:
 
 def rodar_link_grib(dir_grib: str) -> bool:
     """Roda o Link Grib do WPS."""
-    # NOTE: Nescessário deletar para garantir que os GRIBFILE* antigos não interfiram na execução dos próximos passos do WPS
+    # NOTE: Necessário deletar para garantir que os GRIBFILE* antigos não interfiram na execução dos próximos passos do WPS
     grib_files = list(Path(WPS_DIR).glob("GRIBFILE*"))
 
     if grib_files:
@@ -293,15 +295,37 @@ def rodar_link_grib(dir_grib: str) -> bool:
 
 def rodar_ungrib() -> bool:
     """Roda o Ungrib do WPS."""
+    # NOTE: Inclui a deleção tanto do arquivo FILE:*, mas mantém a Vtable
+    intermediate_files = list(Path(WPS_DIR).glob("FILE:*"))
+
+    if intermediate_files:
+        print("[Aviso] Deletando arquivos \"intermediários\" existentes no WPS_DIR antes de rodar o Ungrib...")
+        for arquivo in intermediate_files:
+            arquivo.unlink()
     print("\nRodando Ungrib...")
-    # Aqui você chamaria o comando do Ungrib, por exemplo:
-    # os.system("./ungrib.exe")
-    # Para fins de demonstração, vamos apenas simular a execução.
-    import time
-    time.sleep(2)  # Simula tempo de execução
-    arquivos_gerados['ungrib'] += 1
-    tamanho_arquivos['ungrib'] += 0 # Exemplo: 1 MB
-    return True
+    try:
+        subprocess.run(
+            ["./ungrib.exe"],
+            cwd=WPS_DIR,
+            capture_output=False,
+            text=True,
+            check=True
+        )
+
+        print(f"\n[Sucesso] Ungrib concluído em {WPS_DIR}!")
+
+        # Contagem do número e tamanho dos arquivos gerados pelo Ungrib
+        arquivos_ungrib = list(Path(WPS_DIR).glob("FILE:*"))
+        arquivos_gerados['ungrib'] += len(arquivos_ungrib) # Em geral, são n * horas arquivos para n domínios
+        tamanho_arquivos['ungrib'] += sum(f.stat().st_size for f in arquivos_ungrib)
+
+        return True
+
+    except subprocess.CalledProcessError as e:
+        print(f"[Erro] Falha ao rodar Ungrib em {WPS_DIR}!")
+        print("Return code:", e.returncode)
+        print(f"STDERR: {e.stderr}")
+        return False
 
 def rodar_metgrid() -> bool:
     """Roda o Metgrid do WPS."""
@@ -385,7 +409,6 @@ def main():
             preencher_namelist_input(data_atual, data_atual + dt.timedelta(days=1))
             print("FIM ETAPA 0: Download dos dados GFS\n\n")
 
-
         # - Etapa 1: Conversão GFS GRIB2 -> CSV (Passo 1.1) -
         if etapas.get('etapa') == 1:
             print("INI ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
@@ -430,7 +453,6 @@ def main():
                 break
             print(f"\nFIM ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
 
-        # Próximas etapas (2 a 5) serão adicionadas no desenvolvimento incremental
         if etapas.get('etapa') == 2:
             print("INI ETAPA 2: Processamento WPS (Geogrid, Ungrib, Metgrid)\n")
             print(f"[Aguardando Etapa 2] CSV do GFS para {data_atual} está pronto.")
