@@ -1,0 +1,115 @@
+&afwa
+    afwa_ano_fimg_opt = 1
+    afwa_vis_opt = 1
+/
+
+&bdy_control
+    nested = .false., .true., .true., .true.
+    spec_bdy_width = 5
+    specified = .true.
+/
+
+&domains
+    dx = 27000, 9000, 3000, 1000
+    dy = 27000, 9000, 3000, 1000
+    e_sn = 50, 70, 70, 70
+    e_vert = 70, 70, 70, 70
+    e_we = 50, 70, 70, 70
+    feedback = 1
+    grid_id = 1, 2, 3, 4
+    i_parent_start = 1, 14, 24, 24
+    j_parent_start = 1, 14, 24, 24
+    max_dom = 4
+    max_step_increase_pct = 5, 51, 51, 51
+    max_time_step = 150, 50, 16, 5
+    min_time_step = 30, 10, 3, 1
+    num_metgrid_levels = 34
+    num_metgrid_soil_levels = 4
+    p_top_requested = 5000
+    parent_grid_ratio = 1, 3, 3, 3
+    parent_id = 0, 1, 2, 3
+    parent_time_step_ratio = 1, 3, 3, 3
+    smooth_option = 0
+    starting_time_step = -1
+    step_to_output_time = .true.
+    target_cfl = 1.2, 1.2, 1.2, 1.2
+    time_step = 150
+    time_step_fract_den = 1
+    time_step_fract_num = 0
+    use_adaptive_time_step = .true.
+/
+
+&dynamics
+    base_temp = 300
+    damp_opt = 3
+    dampcoef = 0.2, 0.2, 0.2, 0.2
+    diff_6th_factor = 0.12, 0.12, 0.12, 0.12
+    diff_6th_opt = 0, 0, 0, 0
+    diff_opt = 1, 1, 1, 1
+    gwd_opt = 1, 0, 0, 0
+    hybrid_opt = 2
+    khdif = 0, 0, 0, 0
+    km_opt = 4, 4, 4, 4
+    kvdif = 0, 0, 0, 0
+    moist_adv_opt = 1, 1, 1, 1
+    non_hydrostatic = .true., .true., .true., .true.
+    scalar_adv_opt = 1, 1, 1, 1
+    w_damping = 1
+    zdamp = 5000, 5000, 5000, 5000
+/
+
+&fdda
+/
+
+&grib2
+/
+
+&namelist_quilt
+    nio_groups = 1
+    nio_tasks_per_group = 0
+/
+
+&physics
+    bl_pbl_physics = 5, 5, 5, 5
+    bldt = 0, 0, 0, 0
+    cu_physics = 1, 1, 0, 0
+    cudt = 5, 5, 5, 5
+    icloud = 1
+    mp_physics = 6, 6, 6, 6
+    num_land_cat = 21
+    ra_lw_physics = 4, 4, 4, 4
+    ra_sw_physics = 4, 4, 4, 4
+    radt = 15, 15, 15, 15
+    sf_sfclay_physics = 5, 5, 5, 5
+    sf_surface_physics = 2, 2, 2, 2
+    sf_urban_physics = 0, 0, 0, 0
+    sst_update = 1
+/
+
+&time_control
+    auxinput4_inname = 'wrflowinp_d<domain>'
+    auxinput4_interval = 10800, 10800, 10800, 10800
+    end_day = '_dia_fim_', '_dia_fim_', '_dia_fim_', '_dia_fim_'
+    end_hour = '_hora_fim_', '_hora_fim_', '_hora_fim_', '_hora_fim_'
+    end_month = '_mes_fim_', '_mes_fim_', '_mes_fim_', '_mes_fim_'
+    end_year = '_ano_fim_', '_ano_fim_', '_ano_fim_', '_ano_fim_'
+    frames_per_outfile = 1, 1, 1, 1
+    history_interval = 60, 60, 60, 60
+    input_from_file = .true., .true., .true., .true.
+    interval_seconds = 10800
+    io_form_auxinput4 = 2
+    io_form_boundary = 2
+    io_form_history = 2
+    io_form_input = 2
+    io_form_restart = 2
+    restart = .false.
+    restart_interval = 7200
+    run_days = '_qte_dias_'
+    run_hours = '_qte_horas_'
+    run_minutes = '_qte_minutos_'
+    run_seconds = '_qte_segundos_'
+    start_day = '_dia_inicio_', '_dia_inicio_', '_dia_inicio_', '_dia_inicio_'
+    start_hour = '_hora_inicio_', '_hora_inicio_', '_hora_inicio_', '_hora_inicio_'
+    start_month = '_mes_inicio_', '_mes_inicio_', '_mes_inicio_', '_mes_inicio_'
+    start_year = '_ano_inicio_', '_ano_inicio_', '_ano_inicio_', '_ano_inicio_'
+/

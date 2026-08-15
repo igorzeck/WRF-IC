@@ -150,9 +150,9 @@ def baixar_arquivo(url: str, destino: Path) -> bool:
             destino.unlink()
         return False
 
-def extrair_dados_gfs(data_atual: dt.date, hora_run: int = 0, forecast_inicio: int = 0, forecast_fim: int = 23) -> bool:
+def extrair_dados_gfs(data_atual: dt.date, hora_run: int = 0, forecast_inicio: int = 0, forecast_fim: int = 24) -> bool:
     """Extrai todos os arquivos GFS (f000 a f024 de 3h em 3h) para a data e hora_run especificadas."""
-    print(f"\n--- Baixando GFS para {data_atual} (Run {hora_run:02d}Z, f{forecast_inicio:03d} a f{forecast_fim:03d}) ---")
+    print(f"--- Baixando GFS para {data_atual} (Run {hora_run:02d}Z, f{forecast_inicio:03d} a f{forecast_fim:03d}) ---\n")
     sucesso_total = True
 
     for fh in range(forecast_inicio, forecast_fim + 1, 3):
@@ -165,6 +165,57 @@ def extrair_dados_gfs(data_atual: dt.date, hora_run: int = 0, forecast_inicio: i
 
     return sucesso_total
 
+# --- WPS ---
+def preencher_namelist_wps(data_inicial: dt.date, data_final: dt.date):
+    """Preenche o arquivo namelist.wps com a data atual."""
+    print(f"\nPreenchendo namelist.wps para {data_inicial} até {data_final}...")
+    template_path = DIR_ETL / "templates" / "template_namelist.wps"
+    if not template_path.exists():
+        raise FileNotFoundError(f"[Erro] Arquivo {template_path} não encontrado!")
+
+    with open(template_path, "r", encoding="utf-8") as file:
+        content = file.read()
+
+    # Substitui as datas no conteúdo do namelist.wps
+    content = content.replace("_wps_data_inicial_", data_inicial.strftime("%Y-%m-%d_%H:%M:%S"))
+    content = content.replace("_wps_data_final_", data_final.strftime("%Y-%m-%d_%H:%M:%S"))
+
+    namelist_path = DIR_ETL / "namelist.wps"
+
+    with open(namelist_path, "w", encoding="utf-8") as file:
+        file.write(content)
+
+def preencher_namelist_input(data_inicial: dt.date, data_final: dt.date):
+    """Preenche o arquivo namelist.input com a data atual."""
+    print(f"\nPreenchendo namelist.input para {data_inicial} até {data_final}...")
+    template_path = DIR_ETL / "templates" / "template_namelist.input"
+    if not template_path.exists():
+        raise FileNotFoundError(f"[Erro] Arquivo {template_path} não encontrado!")
+
+    with open(template_path, "r", encoding="utf-8") as file:
+        content = file.read()
+
+    # Substitui as datas no conteúdo do namelist.input
+    content = content.replace("_dia_fim_", data_final.strftime("%d"))
+    content = content.replace("_hora_fim_", data_final.strftime("%H"))
+    content = content.replace("_mes_fim_", data_final.strftime("%m"))
+    content = content.replace("_ano_fim_", data_final.strftime("%Y"))
+
+    content = content.replace("_dia_inicio_", data_inicial.strftime("%d"))
+    content = content.replace("_hora_inicio_", data_inicial.strftime("%H"))
+    content = content.replace("_mes_inicio_", data_inicial.strftime("%m"))
+    content = content.replace("_ano_inicio_", data_inicial.strftime("%Y"))
+
+    content = content.replace("_qte_dias_", str((data_final - data_inicial).days))
+    content = content.replace("_qte_horas_", str((data_final - data_inicial).days * 24))
+    content = content.replace("_qte_minutos_", str((data_final - data_inicial).days * 24 * 60))
+    content = content.replace("_qte_segundos_", str((data_final - data_inicial).days * 24 * 60 * 60))
+
+    namelist_path = DIR_ETL / "namelist.input"
+
+    with open(namelist_path, "w", encoding="utf-8") as file:
+        file.write(content)
+
 def main():
     global total_tempo_execucao, total_arquivos_gerados, total_tamanho_arquivos
 
@@ -172,8 +223,8 @@ def main():
 
     data_inicial = parse_data(etapas.get("data_inicial", "2026-06-01"))
     data_final = parse_data(etapas.get("data_final", "2026-06-30"))
-    lat_alvo = etapas.get("lat", -22.804944)
-    lon_alvo = etapas.get("long", -43.256455)
+    lat_alvo = etapas.get("lat", -22.804943908755842)
+    lon_alvo = etapas.get("long", -43.256455001858306)
 
     total_arquivos_gerados = etapas.get('total_arquivos_gerados', total_arquivos_gerados)
     total_tamanho_arquivos = etapas.get('total_tamanho_arquivos', total_tamanho_arquivos)
@@ -207,14 +258,15 @@ def main():
             print(data_status)
             enviar_email(assunto="ETL GFS Concluído", corpo=data_status)
             break
-
+        
         etapas['data_mais_recente'] = data_atual.strftime("%Y-%m-%d")
         update_etapas(etapas)
 
         # - Etapa 0: Download dos dados GFS -
         if etapas.get('etapa', 0) == 0:
+            print("ETAPA 0: Download dos dados GFS\n")
             total_tempo_execucao['extracao_dados_gfs'] = dt.datetime.now()
-            sucesso = extrair_dados_gfs(data_atual, hora_run=0, forecast_inicio=0, forecast_fim=23)
+            sucesso = extrair_dados_gfs(data_atual, hora_run=0, forecast_inicio=0, forecast_fim=24)
             total_tempo_execucao['extracao_dados_gfs'] = (dt.datetime.now() - total_tempo_execucao['extracao_dados_gfs']).total_seconds()
 
             if sucesso:
@@ -227,18 +279,23 @@ def main():
                 enviar_email(assunto=f"Erro no ETL GFS para {data_atual}", corpo=msg_erro)
                 break
 
+            preencher_namelist_wps(data_atual, data_atual + dt.timedelta(days=1))
+            preencher_namelist_input(data_atual, data_atual + dt.timedelta(days=1))
+            print("FIM ETAPA 0: Download dos dados GFS\n\n")
+
 
         # - Etapa 1: Conversão GFS GRIB2 -> CSV (Passo 1.1) -
         if etapas.get('etapa') == 1:
+            print("INI ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
             dir_grib_dia = str(DIR_GFS / data_atual.strftime('%Y%m%d'))
             arq_csv = str(DIR_DADOS / "csv" / f"gfs_{data_atual.strftime('%Y%m%d')}.csv")
 
-            print(f"\n--- Convertendo GFS GRIB2 para CSV: {data_atual} ---")
+            print(f"--- Convertendo GFS GRIB2 para CSV: {data_atual} ---\n")
             try:
                 total_tempo_execucao['conversao_dados_gfs_para_csv'] = dt.datetime.now()
 
                 if Path(arq_csv).exists():
-                    print(f"[Aviso] CSV já existe para {data_atual}: {arq_csv}!")
+                    print(f"[Existente] CSV já existe para {data_atual}: {arq_csv}!")
                     df = pd.read_csv(arq_csv)
                 else:
                     print(f"[PROCESSANDO] Convertendo GFS para CSV para {data_atual}: {arq_csv}...")
@@ -251,7 +308,7 @@ def main():
                 total_tempo_execucao['conversao_dados_gfs_para_csv'] = (dt.datetime.now() - total_tempo_execucao['conversao_dados_gfs_para_csv']).total_seconds()
 
                 if not df.empty:
-                    print(f"[Sucesso] CSV gerado com sucesso para {data_atual}: {arq_csv}")
+                    print(f"\n[Sucesso] CSV gerado com sucesso para {data_atual}: {arq_csv}")
 
                     etapas['etapa'] = 2
 
@@ -259,7 +316,7 @@ def main():
                 else:
                     msg_erro = f"Nenhum dado extraído do GFS para {data_atual}."
 
-                    print(f"[Erro] {msg_erro}")
+                    print(f"\n[Erro] {msg_erro}")
 
                     enviar_email(assunto=f"Erro no ETL GFS (CSV) para {data_atual}", corpo=msg_erro)
                     break
@@ -269,10 +326,13 @@ def main():
                 print(f"[Erro] {msg_erro}")
                 enviar_email(assunto=f"Erro no ETL GFS (CSV) para {data_atual}", corpo=msg_erro)
                 break
+            print(f"\nFIM ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
 
         # Próximas etapas (2 a 5) serão adicionadas no desenvolvimento incremental
         if etapas.get('etapa') == 2:
+            print("INI ETAPA 2: Processamento WPS (Geogrid, Ungrib, Metgrid)\n")
             print(f"[Aguardando Etapa 2] CSV do GFS para {data_atual} está pronto.")
+            print("\nFIM ETAPA 2: Processamento WPS\n")
             break  # Placeholder para a próxima etapa
 
         if etapas.get('etapa') == 5:
