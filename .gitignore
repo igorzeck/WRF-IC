@@ -12,3 +12,5 @@ resources/*.mp4
 !.gitignore
 # - Formatação -
 pandoc*
+# - Outros projetos -
+datasets/wrf_manager/
