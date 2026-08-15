@@ -15,10 +15,16 @@
 # ======
 # ---- Setup ----
 import os
+import sys
 import urllib.request
 from pathlib import Path
 import yaml
 import datetime as dt
+import pandas as pd
+
+# Adiciona o diretório etl/ ao path para importar submódulos
+sys.path.insert(0, str(Path(__file__).parent))
+from transformacoes.gfs_grib2_to_csv import processar_diretorio_gfs
 
 # Configurações
 DIR_ETL = Path(__file__).parent
@@ -115,6 +121,8 @@ def main():
 
     data_inicial = parse_data(etapas.get("data_inicial", "2026-06-01"))
     data_final = parse_data(etapas.get("data_final", "2026-06-30"))
+    lat_alvo = etapas.get("lat", -22.804944)
+    lon_alvo = etapas.get("long", -43.256455)
     
     str_mais_recente = etapas.get("data_mais_recente")
     data_mais_recente = parse_data(str_mais_recente) if str_mais_recente else data_inicial
@@ -149,18 +157,52 @@ def main():
         if etapas.get('etapa', 0) == 0:
             sucesso = extrair_dados_gfs(data_atual, hora_run=0, forecast_inicio=0, forecast_fim=24)
             if sucesso:
-                print(f"✔ Download GFS finalizado com sucesso para {data_atual}! Continuando para etapa 1.")
+                print(f"[SUCESSO] Download GFS finalizado com sucesso para {data_atual}! Continuando para etapa 1.")
                 etapas['etapa'] = 1
                 update_etapas(etapas)
             else:
                 msg_erro = f"Falha ao baixar dados GFS para {data_atual}."
-                print(f"✖ {msg_erro} Interrompendo execução.")
+                print(f"[ERRO] {msg_erro} Interrompendo execução.")
                 enviar_email(assunto=f"Erro no ETL GFS para {data_atual}", corpo=msg_erro)
                 break
 
-        # Próximas etapas (1 a 5) serão adicionadas no desenvolvimento incremental
+        # - Etapa 1: Conversão GFS GRIB2 -> CSV (Passo 1.1) -
         if etapas.get('etapa') == 1:
-            print(f"[Aguardando Etapa 1] GFS para {data_atual} está no disco.")
+            dir_grib_dia = str(DIR_GFS / data_atual.strftime('%Y%m%d'))
+            arq_csv = str(DIR_DADOS / "csv" / f"gfs_{data_atual.strftime('%Y%m%d')}.csv")
+
+            print(f"\n--- Convertendo GFS GRIB2 para CSV: {data_atual} ---")
+            try:
+                if Path(arq_csv).exists():
+                    print(f"[AVISO] CSV já existe para {data_atual}: {arq_csv}!")
+                    df = pd.read_csv(arq_csv)
+                else:
+                    print(f"[PROCESSANDO] Convertendo GFS para CSV para {data_atual}: {arq_csv}...")
+                    df = processar_diretorio_gfs(dir_grib_dia, lat_alvo, lon_alvo, arq_csv)
+
+                if not df.empty:
+                    print(f"[SUCESSO] CSV gerado com sucesso para {data_atual}: {arq_csv}")
+
+                    etapas['etapa'] = 2
+
+                    update_etapas(etapas)
+                else:
+                    msg_erro = f"Nenhum dado extraído do GFS para {data_atual}."
+
+                    print(f"[ERRO] {msg_erro}")
+
+                    enviar_email(assunto=f"Erro no ETL GFS (CSV) para {data_atual}", corpo=msg_erro)
+                    break
+
+            except Exception as e:
+                msg_erro = f"Erro ao converter GFS para CSV em {data_atual}: {e}"
+                print(f"[ERRO] {msg_erro}")
+                enviar_email(assunto=f"Erro no ETL GFS (CSV) para {data_atual}", corpo=msg_erro)
+                break
+
+        # Próximas etapas (2 a 5) serão adicionadas no desenvolvimento incremental
+        if etapas.get('etapa') == 2:
+            print(f"[Aguardando Etapa 2] CSV do GFS para {data_atual} está pronto.")
 
         if etapas.get('etapa') == 5:
             print(f"[Concluído] ETL GFS para {data_atual} finalizado com sucesso!")
