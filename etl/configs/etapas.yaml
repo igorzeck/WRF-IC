@@ -1,7 +1,7 @@
 arquivos_gerados:
   geogrid: 0
-  gfs: 0
-  gfs_csv: 0
+  gfs: 9
+  gfs_csv: 1
   metgrid: 0
   ungrib: 0
   wrfinput: 0
@@ -16,8 +16,8 @@ lat: -22.804943908755842
 long: -43.256455001858306
 tamanho_arquivos:
   geogrid: 0
-  gfs: 0
-  gfs_csv: 0
+  gfs: 4824608937
+  gfs_csv: 3104
   metgrid: 0
   ungrib: 0
   wrfinput: 0
@@ -25,9 +25,9 @@ tamanho_arquivos:
   wrfout_csv: 0
   wrfrst: 0
 tempo_execucao:
-  conversao_dados_gfs_para_csv: 0
+  conversao_dados_gfs_para_csv: 18.224074
   convertendo_dados_wrf_para_csv: 0
-  extracao_dados_gfs: 0
+  extracao_dados_gfs: 141.756417
   geogrid: 0
   metgrid: 0
   real: 0

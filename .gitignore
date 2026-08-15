@@ -16,3 +16,4 @@ pandoc*
 datasets/wrf_manager/
 # - Pessoais -
 api_key.txt
+wd_dir.txt

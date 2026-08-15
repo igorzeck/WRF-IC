@@ -13,6 +13,12 @@
 # 6. Repetir o processo até o final do período ou até o dia atual, o que ocorrer primeiro
 #
 # A cada erro ou run bem-sucedido, o script envia um e-mail para o usuário com o status do processo.
+# 
+# ---
+# Observações:
+# - O script deve ser executado em um ambiente Linux com WRF e WPS instalados e configurados corretamente.
+# - O script utiliza o GDEX (NCAR ds084.1 / d084001) para baixar os dados GFS.
+# - O script não calcula o tamanho dos arquivos de link, apenas arquivos **criados** pelo WPS, WRF e CSVs.
 # ======
 # ---- Setup ----
 import os
@@ -22,6 +28,7 @@ from pathlib import Path
 import yaml
 import datetime as dt
 import pandas as pd
+import subprocess
 
 # Adiciona o diretório etl/ ao path para importar submódulos
 sys.path.insert(0, str(Path(__file__).parent))
@@ -32,6 +39,9 @@ DIR_ETL = Path(__file__).parent
 ARQ_ETAPAS = DIR_ETL / "configs/etapas.yaml"
 DIR_DADOS = DIR_ETL / "dados"
 DIR_GFS = DIR_DADOS / "gfs"
+
+WD_DIR = Path((DIR_ETL / Path("configs/wd_dir.txt")).read_text().strip())
+WPS_DIR = WD_DIR / "WPS"
 
 # URL base do repositório GDEX (NCAR ds084.1 / d084001)
 GDEX_BASE_URL = "https://osdf-director.osg-htc.org/ncar/gdex/d084001"
@@ -218,10 +228,33 @@ def preencher_namelist_input(data_inicial: dt.date, data_final: dt.date):
 
 def rodar_link_grib(dir_grib: str) -> bool:
     """Roda o Link Grib do WPS."""
+    # NOTE: Nescessário deletar para garantir que os GRIBFILE* antigos não interfiram na execução dos próximos passos do WPS
+    grib_files = list(Path(WPS_DIR).glob("GRIBFILE*"))
+
+    if grib_files:
+        print("[Aviso] Deletando arquivos GRIBFILE* existentes no WPS_DIR antes de rodar o Link Grib...")
+        for arquivo in grib_files:
+            arquivo.unlink()
+    
     print(f"\nRodando Link Grib para {dir_grib}...")
-    import time
-    time.sleep(2)  # Simula tempo de execução
-    return True
+
+    try:
+        subprocess.run(
+            ["./link_grib.csh", f"{dir_grib}/"],
+            cwd=WPS_DIR,
+            capture_output=False,
+            text=True,
+            check=True
+        )
+
+        print(f"\n[Sucesso] Link Grib concluído para {dir_grib} -> {WPS_DIR}!")
+        return True
+
+    except subprocess.CalledProcessError as e:
+        print(f"[Erro] Falha ao rodar Link Grib para {dir_grib}!")
+        print("Return code:", e.returncode)
+        print(f"STDERR: {e.stderr}")
+        return False
 
 def rodar_geogrid() -> bool:
     """Roda o Geogrid do WPS."""
