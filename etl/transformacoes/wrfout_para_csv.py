@@ -5,9 +5,8 @@
 # ==============================================================================
 
 import argparse
-import glob
-import os
 import sys
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -168,11 +167,13 @@ def processar_diretorio_wrfout(
 		targets = [x.strip() for x in f if x.strip()]
 
 	rows = []
-	arquivos = sorted(glob.glob(os.path.join(wrf_dir, pattern)))
+	wrf_path = Path(wrf_dir)
+	arquivos = sorted(wrf_path.glob(pattern))
 	if dom is not None:
 		dom_str = f"d{int(dom):02d}"
 		prefixo_dom = f"wrfout_{dom_str}"
-		arquivos = [fp for fp in arquivos if os.path.basename(fp).startswith(prefixo_dom)]
+		arquivos = [fp for fp in arquivos if Path(fp).name.startswith(prefixo_dom)]
+		print(prefixo_dom, arquivos)
 
 	files_processed = 0
 	extracted_count = 0
@@ -223,7 +224,7 @@ def processar_diretorio_wrfout(
 	df = pd.concat(rows, ignore_index=True)
 
 	if arq_saida:
-		os.makedirs(os.path.dirname(os.path.abspath(arq_saida)), exist_ok=True)
+		Path(arq_saida).parent.mkdir(parents=True, exist_ok=True)
 		df.to_csv(arq_saida, index=False)
 
 	if verbose:
