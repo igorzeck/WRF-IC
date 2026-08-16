@@ -542,7 +542,7 @@ def main():
         if etapas.get('etapa') == 1:
             print("INI ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
             dir_grib_dia = str(DIR_GFS / data_atual.strftime('%Y%m%d'))
-            arq_csv = str(DIR_DADOS / "csv" / f"gfs_{data_atual.strftime('%Y%m%d')}.csv")
+            arq_csv = str(DIR_DADOS / "gfs_csv" / f"gfs_{data_atual.strftime('%Y%m%d')}.csv")
 
             print(f"--- Convertendo GFS GRIB2 para CSV: {data_atual} ---\n")
             try:
@@ -602,14 +602,16 @@ def main():
                     print(f"[Sucesso] Geogrid concluído para {data_atual}!")
 
                     etapas['etapa'] = 3
+                    etapas['geogrid_rodou'] = True
 
                     update_etapas(etapas)
+
                 else:
                     print(f"[Erro] Falha ao rodar Geogrid para {data_atual}!")
                     break
             else:
                 print(f"[Aviso] Pulando Geogrid para {data_atual} (já foi rodado na primeira run).")
-                etapas['geogrid_rodou'] = True
+
             print("\nFIM ETAPA 2: Geogrid\n")
 
         if etapas.get('etapa') == 3:
@@ -735,13 +737,46 @@ def main():
 
         if etapas.get('etapa') == 9:
             print("INI ETAPA 9: Limpeza de arquivos intermediários\n")
-            # Retira arquivos de input e wrfout, mas mantém as pastas
-            pasta_input = DIR_DADOS / "input"
+            # Remove apenas artefatos do dia anterior para manter segurança na retenção.
             pasta_wrfout = DIR_DADOS / "wrfout"
-            for arquivo in pasta_input.glob("*"):
-                arquivo.unlink()
-            for arquivo in pasta_wrfout.glob("*"):
-                arquivo.unlink()
+            pasta_gfs = DIR_DADOS / "gfs"
+
+            dia_anterior = data_atual - dt.timedelta(days=1)
+            token_prev_compacto = dia_anterior.strftime('%Y%m%d')
+            token_prev_hifen = dia_anterior.strftime('%Y-%m-%d')
+
+            for item in pasta_wrfout.glob("*"):
+                nome = item.name
+                apagar = (token_prev_compacto in nome) or (token_prev_hifen in nome)
+                if not apagar:
+                    continue
+                if item.is_file() or item.is_symlink():
+                    item.unlink()
+                elif item.is_dir():
+                    for sub in item.rglob("*"):
+                        if sub.is_file() or sub.is_symlink():
+                            sub.unlink()
+                    for subdir in sorted(item.rglob("*"), reverse=True):
+                        if subdir.is_dir():
+                            subdir.rmdir()
+                    item.rmdir()
+
+            for item in pasta_gfs.glob("*"):
+                # Em geral são pastas YYYYMMDD; remove somente a pasta/arquivo do dia anterior.
+                nome = item.name
+                apagar = (nome == token_prev_compacto) or (token_prev_hifen in nome)
+                if not apagar:
+                    continue
+                if item.is_file() or item.is_symlink():
+                    item.unlink()
+                elif item.is_dir():
+                    for sub in item.rglob("*"):
+                        if sub.is_file() or sub.is_symlink():
+                            sub.unlink()
+                    for subdir in sorted(item.rglob("*"), reverse=True):
+                        if subdir.is_dir():
+                            subdir.rmdir()
+                    item.rmdir()
             
             etapas['etapa'] = 10
             update_etapas(etapas)
@@ -756,13 +791,35 @@ def main():
 
     if (data_atual >= data_de_agora) or (data_atual > data_final):
         print("Juntando arquivos csv em um único arquivo final...")
-        arq_dir = DIR_ETL.parent / "datasets" / "wrfout_csv"
+        wrfout_arq_dir = DIR_ETL.parent / "datasets" / "wrfout_csv"
+        gfs_arq_dir = DIR_DADOS / "gfs_csv"
         dom = int(etapas.get("dom", 4))
 
-        arquivos_csv = sorted(arq_dir.glob(f"wrfout_d{dom:02d}_*.csv"))
+        # Merge final dos CSVs GFS (um único arquivo para o período)
+        gfs_csvs = sorted(gfs_arq_dir.glob("gfs_*.csv"))
+        if not gfs_csvs:
+            print(f"[Aviso] Nenhum CSV GFS encontrado para merge em {gfs_arq_dir}.")
+        else:
+            gfs_dfs = []
+            for arquivo in gfs_csvs:
+                try:
+                    gfs_dfs.append(pd.read_csv(arquivo))
+                except Exception as e:
+                    print(f"[Aviso] Falha ao ler {arquivo.name}: {e}")
 
-        if not arquivos_csv:
-            print(f"[Aviso] Nenhum arquivo encontrado para merge em {arq_dir} (domínio d{dom:02d}).")
+            if not gfs_dfs:
+                print("[Aviso] Nenhum CSV GFS válido para merge após leitura.")
+            else:
+                gfs_final = pd.concat(gfs_dfs, ignore_index=True)
+                arq_final_gfs = DIR_ETL.parent / "datasets" / f"{data_inicial}_{data_final}_gfs.csv"
+                gfs_final.to_csv(arq_final_gfs, index=False)
+                print(f"[Sucesso] Arquivo final GFS gerado com sucesso: {arq_final_gfs}")
+
+        # Merge final dos CSVs WRFOUT (um único arquivo para o período)
+        arquivos_wrfout_csv = sorted(wrfout_arq_dir.glob(f"wrfout_d{dom:02d}_*.csv"))
+
+        if not arquivos_wrfout_csv:
+            print(f"[Aviso] Nenhum arquivo encontrado para merge em {wrfout_arq_dir} (domínio d{dom:02d}).")
             enviar_email(
                 assunto="ETL GFS Concluído",
                 corpo=(
@@ -773,7 +830,7 @@ def main():
         else:
             dfs = []
             
-            for arquivo in arquivos_csv:
+            for arquivo in arquivos_wrfout_csv:
                 try:
                     dfs.append(pd.read_csv(arquivo))
                 except Exception as e:
