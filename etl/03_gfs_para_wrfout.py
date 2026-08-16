@@ -29,7 +29,9 @@
 # ---- Setup ----
 import os
 import sys
+import socket
 import urllib.request
+import urllib.error
 from pathlib import Path
 import yaml
 import datetime as dt
@@ -51,7 +53,7 @@ if Path(DIR_ETL / "configs/wd_dir.txt").exists():
     WD_DIR = Path((DIR_ETL / "configs/wd_dir.txt").read_text().strip())
 else:
     print("[ERRO] Arquivo configs/wd_dir.txt não encontrado! Defina o working directory do WPS e WRF.")
-    exit(1)
+    sys.exit(1)
 WPS_DIR = WD_DIR / "WPS"
 WRF_DIR = WD_DIR / "WRF/test/em_real/"
 
@@ -146,32 +148,45 @@ def get_gfs_request_url(data: dt.date, hora_run: int = 0, hora_forecast: int = 0
 
     return f"{GDEX_BASE_URL}/{ano}/{ano}{mes}{dia}/gfs.0p25.{ano}{mes}{dia}{hora_str}.f{hora_forecast:03d}.grib2"
 
-def baixar_arquivo(url: str, destino: Path) -> bool:
-    """Baixa o arquivo HTTP salvando no disco se ainda não existir."""
+def baixar_arquivo_gfs(url: str, destino: Path, tentativas: int = 3, timeout: int = 180) -> bool:
+    """Baixa um arquivo GFS com retentativas, streaming e escrita atômica (por chunk a chunk)."""
     destino.parent.mkdir(parents=True, exist_ok=True)
     if destino.exists() and destino.stat().st_size > 0:
         print(f"  [Existente] {destino.name} ({destino.stat().st_size / (1024*1024):.1f} MB)")
         return True
 
-    print(f"  [Baixando] {destino.name}...", end="\r")
-    try:
-        global arquivos_gerados, tamanho_arquivos
+    global arquivos_gerados, tamanho_arquivos
 
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req) as response, open(destino, "wb") as out_file:
-            out_file.write(response.read())
-        
-        print(f"  [Concluído] {destino.name} ({destino.stat().st_size / (1024*1024):.1f} MB)")
+    temp_path = destino.with_suffix(destino.suffix + ".part")
+    for tentativa in range(1, tentativas + 1):
+        print(f"  [Baixando] {destino.name} (tentativa {tentativa}/{tentativas})...", end="\r")
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=timeout) as response, open(temp_path, "wb") as out_file:
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    out_file.write(chunk)
 
-        arquivos_gerados['gfs'] += 1
-        tamanho_arquivos['gfs'] += destino.stat().st_size
+            if temp_path.stat().st_size <= 0:
+                raise ValueError("download vazio")
 
-        return True
-    except Exception as e:
-        print(f"  [ERRO] Falha ao baixar {destino.name}: {e}")
-        if destino.exists():
-            destino.unlink()
-        return False
+            temp_path.replace(destino)
+            print(f"  [Concluído] {destino.name} ({destino.stat().st_size / (1024*1024):.1f} MB)" + " " * 20)
+
+            arquivos_gerados['gfs'] += 1
+            tamanho_arquivos['gfs'] += destino.stat().st_size
+            return True
+
+        except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, socket.timeout, OSError, ValueError) as e:
+            print(f"  [ERRO] Falha ao baixar {destino.name} na tentativa {tentativa}: {e}")
+            if temp_path.exists():
+                temp_path.unlink()
+
+    if destino.exists() and destino.stat().st_size == 0:
+        destino.unlink()
+    return False
 
 def extrair_dados_gfs(data_atual: dt.date, hora_run: int = 0, forecast_inicio: int = 0, forecast_fim: int = 24) -> bool:
     """Extrai todos os arquivos GFS (f000 a f024 de 3h em 3h) para a data e hora_run especificadas."""
@@ -183,7 +198,7 @@ def extrair_dados_gfs(data_atual: dt.date, hora_run: int = 0, forecast_inicio: i
         nome_arquivo = f"gfs.0p25.{data_atual.strftime('%Y%m%d')}{hora_run:02d}.f{fh:03d}.grib2"
         destino = DIR_GFS / data_atual.strftime('%Y%m%d') / nome_arquivo
 
-        if not baixar_arquivo(url, destino):
+        if not baixar_arquivo_gfs(url, destino):
             sucesso_total = False
 
     return sucesso_total
@@ -477,10 +492,7 @@ def main():
 
     # Somente se não for a primeira run
     if (data_mais_recente != data_inicial) and (data_mais_recente < data_final):
-        primeira_run = False
         print(f"[Aviso] Continuando ETL do GFS a partir de {data_mais_recente} até {data_final}.")
-    else:
-        primeira_run = True
 
     print(f"ETL GFS iniciado | Período: {data_inicial} até {data_final} | Progresso atual: {data_mais_recente}")
 
@@ -577,7 +589,11 @@ def main():
 
             sucesso = True
 
-            if primeira_run:
+            # NOTE: O Geogrid só precisa ser rodado uma vez, no primeiro dia do período definido. Se já foi rodado, pula essa etapa.
+            if not any(Path(WPS_DIR).glob("geo_em*")):
+                etapas['geogrid_rodou'] = False
+    
+            if not etapas.get('geogrid_rodou'):
                 tempo_execucao['geogrid'] = dt.datetime.now()
                 sucesso = rodar_geogrid()
                 tempo_execucao['geogrid'] = (dt.datetime.now() - tempo_execucao['geogrid']).total_seconds()
@@ -593,6 +609,7 @@ def main():
                     break
             else:
                 print(f"[Aviso] Pulando Geogrid para {data_atual} (já foi rodado na primeira run).")
+                etapas['geogrid_rodou'] = True
             print("\nFIM ETAPA 2: Geogrid\n")
 
         if etapas.get('etapa') == 3:
@@ -740,20 +757,47 @@ def main():
     if (data_atual >= data_de_agora) or (data_atual > data_final):
         print("Juntando arquivos csv em um único arquivo final...")
         arq_dir = DIR_ETL.parent / "datasets" / "wrfout_csv"
+        dom = int(etapas.get("dom", 4))
 
-        for arquivo in sorted(list(arq_dir.glob("wrfout_*.csv"))):
-            df = pd.read_csv(arquivo)
-            if arquivo.name == f"wrfout_d{int(etapas.get('dom', 4)):02d}_{data_inicial.strftime('%Y%m%d')}.csv":
-                df_final = df
+        arquivos_csv = sorted(arq_dir.glob(f"wrfout_d{dom:02d}_*.csv"))
+
+        if not arquivos_csv:
+            print(f"[Aviso] Nenhum arquivo encontrado para merge em {arq_dir} (domínio d{dom:02d}).")
+            enviar_email(
+                assunto="ETL GFS Concluído",
+                corpo=(
+                    f"ETL finalizado para {data_inicial} até {data_final}, "
+                    f"mas não há CSVs para merge do domínio d{dom:02d}."
+                ),
+            )
+        else:
+            dfs = []
+            
+            for arquivo in arquivos_csv:
+                try:
+                    dfs.append(pd.read_csv(arquivo))
+                except Exception as e:
+                    print(f"[Aviso] Falha ao ler {arquivo.name}: {e}")
+
+            if not dfs:
+                print("[Aviso] Nenhum CSV válido para merge após leitura.")
             else:
-                df_final = pd.concat([df_final, df], ignore_index=True)
-        
-        arq_final = DIR_ETL.parent / "datasets" / f"{data_inicial}_{data_final}.csv"
-        df_final.to_csv(arq_final, index=False)
-        print(f"[Sucesso] Arquivo final gerado com sucesso: {arq_final}\n")
-        print(f"[Concluído] ETL GFS finalizado com sucesso para o período {data_inicial} até {data_final}! Arquivo final: {arq_final}")
-        enviar_email(assunto="ETL GFS Concluído", corpo=f"ETL GFS finalizado com sucesso para o período {data_inicial} até {data_final}! Arquivo final: {arq_final}")
-        
+                df_final = pd.concat(dfs, ignore_index=True)
+                arq_final = DIR_ETL.parent / "datasets" / f"{data_inicial}_{data_final}_d{dom:02d}.csv"
+                df_final.to_csv(arq_final, index=False)
+
+                print(f"[Sucesso] Arquivo final gerado com sucesso: {arq_final}")
+                print(
+                    f"[Concluído] ETL GFS finalizado para {data_inicial} até {data_final}. "
+                    f"Arquivo final: {arq_final}"
+                )
+                enviar_email(
+                    assunto="ETL GFS Concluído",
+                    corpo=(
+                        f"ETL finalizado com sucesso para {data_inicial} até {data_final}. "
+                        f"Arquivo final: {arq_final}"
+                    ),
+                )
 
 if __name__ == "__main__":
     main()

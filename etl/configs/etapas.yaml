@@ -4,3 +4,4 @@ data_inicial: '2026-06-01'
 data_mais_recente: '2026-06-01'
 dom: 4
 etapa: 0
+geogrid_rodou: false
