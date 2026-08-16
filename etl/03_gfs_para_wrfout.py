@@ -25,6 +25,7 @@
 # - O WRF é rodado a partir do diretório WRF/test/em_real/ dentro do working directory definido.
 # - A Vtable do WPS deve estar configurado corretamente e linkada no diretório WPS antes de rodar o script.
 # ======
+# TODO: Devido ao jeito que as pastas são organizadas ele não funcionaria talvez para horizontes < 24h? Verificar isso
 # ---- Setup ----
 import os
 import sys
@@ -46,8 +47,11 @@ ARQ_ETAPAS = DIR_ETL / "configs/etapas.yaml"
 DIR_DADOS = DIR_ETL / "dados"
 DIR_GFS = DIR_DADOS / "gfs"
 ARQ_VAR_TARGETS = DIR_ETL.parent / "datasets" / "var_targets.txt"
-
-WD_DIR = Path((DIR_ETL / Path("configs/wd_dir.txt")).read_text().strip())
+if Path(DIR_ETL / "configs/wd_dir.txt").exists():
+    WD_DIR = Path((DIR_ETL / "configs/wd_dir.txt").read_text().strip())
+else:
+    print("[ERRO] Arquivo configs/wd_dir.txt não encontrado! Defina o working directory do WPS e WRF.")
+    exit(1)
 WPS_DIR = WD_DIR / "WPS"
 WRF_DIR = WD_DIR / "WRF/test/em_real/"
 
@@ -463,7 +467,7 @@ def main():
     data_final = parse_data(etapas.get("data_final", "2026-06-30"))
     lat_alvo = etapas.get("lat", -22.804943908755842)
     long_alvo = etapas.get("long", -43.256455001858306)
-
+    
     arquivos_gerados = etapas.get('arquivos_gerados', arquivos_gerados)
     tamanho_arquivos = etapas.get('tamanho_arquivos', tamanho_arquivos)
     tempo_execucao = etapas.get('tempo_execucao', tempo_execucao)
@@ -499,9 +503,6 @@ def main():
             print(data_status)
             enviar_email(assunto="ETL GFS Concluído", corpo=data_status)
             break
-        
-        etapas['data_mais_recente'] = data_atual.strftime("%Y-%m-%d")
-        update_etapas(etapas)
 
         # - Etapa 0: Download dos dados GFS -
         if etapas.get('etapa', 0) == 0:
@@ -521,7 +522,8 @@ def main():
                 break
 
             preencher_namelist_wps(data_atual, data_atual + dt.timedelta(days=1))
-            preencher_namelist_input(data_atual, data_atual + dt.timedelta(days=1))
+            # WRF precisa de 1h a menos para interpolar corretamente
+            preencher_namelist_input(data_atual, data_atual + dt.timedelta(hours=23))
             print("FIM ETAPA 0: Download dos dados GFS\n\n")
 
         # - Etapa 1: Conversão GFS GRIB2 -> CSV (Passo 1.1) -
@@ -676,8 +678,10 @@ def main():
             print("INI ETAPA 8: Conversão WRF -> CSV\n")
             tempo_execucao['convertendo_dados_wrf_para_csv'] = dt.datetime.now()
             try:
-                arq_csv = str(DIR_ETL.parent.parent / "datasets" / "wrfout_csv" / f"wrfout_{data_atual.strftime('%Y%m%d')}.csv")
+                sucesso = False
+                arq_csv = str(DIR_ETL.parent / "datasets" / "wrfout_csv" / f"wrfout_d{int(etapas.get('dom', 4)):02d}_{data_atual.strftime('%Y%m%d')}.csv")
                 if Path(arq_csv).exists():
+                    sucesso = True
                     print(f"[Existente] CSV já existe para {data_atual}: {arq_csv}!")
                 else:
                     df = processar_diretorio_wrfout(
@@ -687,6 +691,7 @@ def main():
                         arquivo_targets=str(ARQ_VAR_TARGETS),
                         arq_saida=arq_csv,
                         pattern="wrfout*",
+                        dom=etapas.get('dom', 4),
                         verbose=True,
                         quiet_unsupported=True,
                     )
@@ -694,9 +699,19 @@ def main():
                     if df.empty:
                         print(f"[Aviso] Nenhum dado WRFOUT convertido para {data_atual}.")
                     else:
+                        sucesso = True
+                        print(f"[Sucesso] Conversão WRF -> CSV concluída para {data_atual}: {arq_csv} ({len(df)} registros)")
                         arquivos_gerados['wrfout_csv'] += 1
                         tamanho_arquivos['wrfout_csv'] += Path(arq_csv).stat().st_size
-                        print(f"[Sucesso] Conversão WRF -> CSV concluída para {data_atual}: {arq_csv} ({len(df)} registros)")
+
+                if sucesso:
+                    etapas['etapa'] = 9
+                    update_etapas(etapas)
+            except Exception as e:
+                msg_erro = f"Erro ao converter WRF para CSV em {data_atual}: {e}"
+                print(f"[Erro] {msg_erro}")
+                enviar_email(assunto=f"Erro no ETL WRF (CSV) para {data_atual}", corpo=msg_erro)
+                break
             finally:
                 tempo_execucao['convertendo_dados_wrf_para_csv'] = (dt.datetime.now() - tempo_execucao['convertendo_dados_wrf_para_csv']).total_seconds()
             print("\nFIM ETAPA 8: Conversão WRF -> CSV\n")
@@ -710,26 +725,30 @@ def main():
                 arquivo.unlink()
             for arquivo in pasta_wrfout.glob("*"):
                 arquivo.unlink()
+            
+            etapas['etapa'] = 10
+            update_etapas(etapas)
             print("\nFIM ETAPA 9: Limpeza de arquivos intermediários\n")
         
-        if etapas.get('etapa') >= 11:
+        if etapas.get('etapa') == 10:
             print(f"[Concluído] ETL GFS para {data_atual} finalizado com sucesso!")
             etapas['etapa'] = 0
+            etapas['data_mais_recente'] = data_atual.strftime("%Y-%m-%d")
             update_etapas(etapas)
-        break  # Para fins de teste
+            primeira_run = False
 
     if (data_atual >= data_de_agora) or (data_atual > data_final):
         print("Juntando arquivos csv em um único arquivo final...")
-        arq_dir = DIR_ETL.parent.parent / "datasets" / "wrfout_csv"
+        arq_dir = DIR_ETL.parent / "datasets" / "wrfout_csv"
 
-        for arquivo in arq_dir.glob("wrfout_*.csv"):
+        for arquivo in sorted(list(arq_dir.glob("wrfout_*.csv"))):
             df = pd.read_csv(arquivo)
-            if arquivo.name == f"wrfout_{data_inicial.strftime('%Y%m%d')}.csv":
+            if arquivo.name == f"wrfout_d{int(etapas.get('dom', 4)):02d}_{data_inicial.strftime('%Y%m%d')}.csv":
                 df_final = df
             else:
                 df_final = pd.concat([df_final, df], ignore_index=True)
         
-        arq_final = DIR_ETL.parent.parent / "datasets" / f"{data_inicial}_{data_final}.csv"
+        arq_final = DIR_ETL.parent / "datasets" / f"{data_inicial}_{data_final}.csv"
         df_final.to_csv(arq_final, index=False)
         print(f"[Sucesso] Arquivo final gerado com sucesso: {arq_final}\n")
         print(f"[Concluído] ETL GFS finalizado com sucesso para o período {data_inicial} até {data_final}! Arquivo final: {arq_final}")
