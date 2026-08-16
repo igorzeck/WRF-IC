@@ -37,7 +37,8 @@ import subprocess
 
 # Adiciona o diretório etl/ ao path para importar submódulos
 sys.path.insert(0, str(Path(__file__).parent))
-from transformacoes.gfs_grib2_to_csv import processar_diretorio_gfs
+from transformacoes.gfs_grib2_para_csv import processar_diretorio_gfs
+from transformacoes.wrfout_para_csv import processar_diretorio_wrfout
 
 # Configurações
 DIR_ETL = Path(__file__).parent
@@ -402,7 +403,51 @@ def rodar_real() -> bool:
         print("Return code:", e.returncode)
         return False
 
+def rodar_wrf(cores: int) -> bool:
+    """Roda o WRF. NOTE: Para ver o output desse: `tail -f rsl.out.0000` em outro terminal"""
+    intermediate_files = list(Path(WRF_DIR).glob("wrfout*")) + list(Path(WRF_DIR).glob("wrfrst*"))
 
+    if intermediate_files:
+        print("[Aviso] Deletando arquivos wrfout*, wrfrst* existentes no WRF_DIR antes de rodar o WRF...")
+        for arquivo in intermediate_files:
+            arquivo.unlink()
+
+    # NOTE: Necessário linkar (ln -sf) arquivos met_em* do WPS para o diretório do WRF antes de rodar o Real
+    print("Linkando arquivos met_em* do WPS para o diretório do WRF...")
+    met_em_files = list(Path(WPS_DIR).glob("met_em*"))
+    for met_em_file in met_em_files:
+        link_path = Path(WRF_DIR) / met_em_file.name
+        if not link_path.exists():
+            link_path.symlink_to(met_em_file)
+
+    print("\nRodando WRF...")
+
+    try:
+        subprocess.run(
+            ["mpirun", "-np", str(cores), "./wrf.exe"],
+            cwd=WRF_DIR,
+            capture_output=False,
+            text=True,
+            check=True
+        )
+
+        print(f"\n[Sucesso] WRF concluído em {WRF_DIR}!")
+
+        # Contagem do número e tamanho dos arquivos gerados pelo WRF
+        # NOTE: Deconsidera o arquivo wrfbdy_d01
+        arquivos_wrfout = list(Path(WRF_DIR).glob("wrfout*"))
+        arquivos_wrfrst = list(Path(WRF_DIR).glob("wrfrst*"))
+        arquivos_gerados['wrfout'] += len(arquivos_wrfout) # Em geral, são n arquivos para n domínios
+        tamanho_arquivos['wrfout'] += sum(f.stat().st_size for f in arquivos_wrfout)
+        arquivos_gerados['wrfrst'] += len(arquivos_wrfrst) # Número de arquivos baseado nas configurações em namelist.input
+        tamanho_arquivos['wrfrst'] += sum(f.stat().st_size for f in arquivos_wrfrst)
+
+        return True
+
+    except subprocess.CalledProcessError as e:
+        print(f"[Erro] Falha ao rodar WRF em {WRF_DIR}!")
+        print("Return code:", e.returncode)
+        return False
 
 def main():
     global tempo_execucao, arquivos_gerados, tamanho_arquivos
@@ -519,6 +564,8 @@ def main():
                 enviar_email(assunto=f"Erro no ETL GFS (CSV) para {data_atual}", corpo=msg_erro)
                 break
             print(f"\nFIM ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
+        
+        print("=== WPS ===\n")
 
         if etapas.get('etapa') == 2:
             print("INI ETAPA 2: Geogrid\n")
@@ -590,8 +637,10 @@ def main():
 
             print("\nFIM ETAPA 5: Metgrid\n")
         
+        print("=== WRF ===\n")
+    
         if etapas.get('etapa') == 6:
-            print("INI ETAPA 6: Real (WRF)\n")
+            print("INI ETAPA 6: Real\n")
             tempo_execucao['real'] = dt.datetime.now()
             sucesso = rodar_real()
             tempo_execucao['real'] = (dt.datetime.now() - tempo_execucao['real']).total_seconds()
@@ -603,12 +652,12 @@ def main():
             else:
                 print(f"[Erro] Falha ao rodar Real para {data_atual}!")
                 break
-            print("\nFIM ETAPA 6: Real (WRF)\n")
+            print("\nFIM ETAPA 6: Real\n")
         
         if etapas.get('etapa') == 7:
             print("INI ETAPA 7: WRF\n")
             tempo_execucao['wrf'] = dt.datetime.now()
-            sucesso = rodar_wrf()
+            sucesso = rodar_wrf(etapas.get('cores', 6))
             tempo_execucao['wrf'] = (dt.datetime.now() - tempo_execucao['wrf']).total_seconds()
             if sucesso:
                 print(f"[Sucesso] WRF concluído para {data_atual}!")
@@ -620,7 +669,19 @@ def main():
                 break
             print("\nFIM ETAPA 7: WRF\n")
 
-        if etapas.get('etapa') >= 8:
+        if etapas.get('etapa') == 8:
+            print("INI ETAPA 8: Conversão WRF -> CSV\n")
+            tempo_execucao['convertendo_dados_wrf_para_csv'] = dt.datetime.now()
+            try:
+                arq_csv = str(DIR_DADOS / "csv" / f"wrfout_{data_atual.strftime('%Y%m%d')}.csv")
+                if Path(arq_csv).exists():
+                    print(f"[Existente] CSV já existe para {data_atual}: {arq_csv}!")
+                else:
+                    print(f"[Aviso] TBA")
+            finally:
+                tempo_execucao['convertendo_dados_wrf_para_csv'] = (dt.datetime.now() - tempo_execucao['convertendo_dados_wrf_para_csv']).total_seconds()
+            print("\nFIM ETAPA 8: Conversão WRF -> CSV\n")
+        if etapas.get('etapa') >= 9:
             print(f"[Concluído] ETL GFS para {data_atual} finalizado com sucesso!")
             etapas['etapa'] = 0
             update_etapas(etapas)

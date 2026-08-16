@@ -8,10 +8,11 @@ arquivos_gerados:
   wrfout: 0
   wrfout_csv: 0
   wrfrst: 0
+cores: 6
 data_final: '2026-06-30'
 data_inicial: '2026-06-01'
 data_mais_recente: '2026-06-01'
-etapa: 0
+etapa: 7
 lat: -22.804943908755842
 long: -43.256455001858306
 tamanho_arquivos:
