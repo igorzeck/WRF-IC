@@ -248,10 +248,23 @@ def preencher_namelist_input(data_inicial: dt.date, data_final: dt.date):
     content = content.replace("_mes_inicio_", data_inicial.strftime("%m"))
     content = content.replace("_ano_inicio_", data_inicial.strftime("%Y"))
 
-    content = content.replace("_qte_dias_", str((data_final - data_inicial).days))
-    content = content.replace("_qte_horas_", str((data_final - data_inicial).days * 24))
-    content = content.replace("_qte_minutos_", str((data_final - data_inicial).days * 24 * 60))
-    content = content.replace("_qte_segundos_", str((data_final - data_inicial).days * 24 * 60 * 60))
+    delta = data_final - data_inicial
+    total_seconds = int(delta.total_seconds())
+
+    if total_seconds < 0:
+        raise ValueError(f"Período inválido para namelist.input: data_final ({data_final}) < data_inicial ({data_inicial})")
+
+    run_days = total_seconds // 86400
+    rem_seconds = total_seconds % 86400
+    run_hours = rem_seconds // 3600
+    rem_seconds %= 3600
+    run_minutes = rem_seconds // 60
+    run_seconds = rem_seconds % 60
+
+    content = content.replace("_qte_dias_", str(run_days))
+    content = content.replace("_qte_horas_", str(run_hours))
+    content = content.replace("_qte_minutos_", str(run_minutes))
+    content = content.replace("_qte_segundos_", str(run_seconds))
 
     namelist_path = WRF_DIR / "namelist.input"
 
@@ -521,7 +534,7 @@ def main():
         if etapas.get('etapa', 0) == 0:
             print("ETAPA 0: Download dos dados GFS\n")
             tempo_execucao['extracao_dados_gfs'] = dt.datetime.now()
-            # NOTE: Nescessário 24h de dados para interpolar 23h de previsão corretamente
+            # NOTE: Necessário incluir f024 para cobrir a fronteira até 00Z do dia seguinte
             sucesso = extrair_dados_gfs(data_atual, hora_run=0, forecast_inicio=0, forecast_fim=24)
             tempo_execucao['extracao_dados_gfs'] = (dt.datetime.now() - tempo_execucao['extracao_dados_gfs']).total_seconds()
 
@@ -536,10 +549,9 @@ def main():
                 sys.exit(1)
 
             preencher_namelist_wps(data_atual, data_atual + dt.timedelta(days=1))
-            # NOTE: WRF precisa de 1h a menos para interpolar corretamente
-            preencher_namelist_input(data_atual, data_atual + dt.timedelta(hours=23))
+            preencher_namelist_input(data_atual, data_atual + dt.timedelta(hours=24))
             print("FIM ETAPA 0: Download dos dados GFS\n\n")
-        
+
         # - Etapa 1: Conversão GFS GRIB2 -> CSV (Passo 1.1) -
         if etapas.get('etapa') == 1:
             print("INI ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
@@ -679,7 +691,7 @@ def main():
                 print(f"[Erro] Falha ao rodar Real para {data_atual}!")
                 sys.exit(1)
             print("\nFIM ETAPA 6: Real\n")
-        
+
         if etapas.get('etapa') == 7:
             print("INI ETAPA 7: WRF\n")
             tempo_execucao['wrf'] = dt.datetime.now()

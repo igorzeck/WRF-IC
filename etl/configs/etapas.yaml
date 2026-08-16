@@ -4,7 +4,7 @@ arquivos_gerados:
   gfs_csv: 1
   metgrid: 36
   ungrib: 9
-  wrfinput: 8
+  wrfinput: 24
   wrfout: 0
   wrfout_csv: 0
   wrfrst: 0
@@ -21,7 +21,7 @@ tamanho_arquivos:
   gfs_csv: 3104
   metgrid: 103277599
   ungrib: 7363609416
-  wrfinput: 63507480
+  wrfinput: 190522440
   wrfout: 0
   wrfout_csv: 0
   wrfrst: 0
@@ -31,6 +31,6 @@ tempo_execucao:
   extracao_dados_gfs: 0.000391
   geogrid: 6.235083
   metgrid: 339.817176
-  real: 10.067411
+  real: 10.743476
   ungrib: 166.391984
   wrf: 0.384182
