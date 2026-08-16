@@ -173,7 +173,6 @@ def processar_diretorio_wrfout(
 		dom_str = f"d{int(dom):02d}"
 		prefixo_dom = f"wrfout_{dom_str}"
 		arquivos = [fp for fp in arquivos if Path(fp).name.startswith(prefixo_dom)]
-		print(prefixo_dom, arquivos)
 
 	files_processed = 0
 	extracted_count = 0

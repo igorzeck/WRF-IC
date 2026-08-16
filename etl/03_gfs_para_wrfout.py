@@ -517,6 +517,11 @@ def main():
         data_de_agora = dt.datetime.now()
         
         data_atual = data_inicial + dt.timedelta(days=offset)
+
+        data_mais_recente = data_atual
+        etapas['data_mais_recente'] = data_mais_recente.strftime("%Y-%m-%d %H:%M:%S")
+        update_etapas(etapas)
+
         data_status = ""
 
         # - Verificação de término do processo -
@@ -624,6 +629,9 @@ def main():
                     print(f"[Erro] Falha ao rodar Geogrid para {data_atual}!")
                     sys.exit(1)
             else:
+                etapas['etapa'] = 3
+
+                update_etapas(etapas)
                 print(f"[Aviso] Pulando Geogrid para {data_atual} (já foi rodado antes).")
 
             print("\nFIM ETAPA 2: Geogrid\n")
@@ -752,28 +760,11 @@ def main():
         if etapas.get('etapa') == 9:
             print("INI ETAPA 9: Limpeza de arquivos intermediários\n")
             # Remove apenas artefatos do dia anterior para manter segurança na retenção.
-            pasta_wrfout = DIR_DADOS / "wrfout"
             pasta_gfs = DIR_DADOS / "gfs"
 
             dia_anterior = data_atual - dt.timedelta(days=1)
             token_prev_compacto = dia_anterior.strftime('%Y%m%d')
             token_prev_hifen = dia_anterior.strftime('%Y-%m-%d')
-
-            for item in pasta_wrfout.glob("*"):
-                nome = item.name
-                apagar = (token_prev_compacto in nome) or (token_prev_hifen in nome)
-                if not apagar:
-                    continue
-                if item.is_file() or item.is_symlink():
-                    item.unlink()
-                elif item.is_dir():
-                    for sub in item.rglob("*"):
-                        if sub.is_file() or sub.is_symlink():
-                            sub.unlink()
-                    for subdir in sorted(item.rglob("*"), reverse=True):
-                        if subdir.is_dir():
-                            subdir.rmdir()
-                    item.rmdir()
 
             for item in pasta_gfs.glob("*"):
                 # Em geral são pastas YYYYMMDD; remove somente a pasta/arquivo do dia anterior.
@@ -799,7 +790,6 @@ def main():
         if etapas.get('etapa') == 10:
             print(f"[Concluído] ETL GFS para {data_atual} finalizado com sucesso!")
             etapas['etapa'] = 0
-            etapas['data_mais_recente'] = data_atual.strftime("%Y-%m-%d")
             update_etapas(etapas)
 
     if (data_atual >= data_de_agora) or (data_atual > data_final):
@@ -824,6 +814,19 @@ def main():
                 print("[Aviso] Nenhum CSV GFS válido para merge após leitura.")
             else:
                 gfs_final = pd.concat(gfs_dfs, ignore_index=True)
+
+                # NOTE: no encontro entre dias, prioriza o f00 do dia seguinte
+                # (último arquivo lido) no lugar do f024 do dia anterior.
+                if "datetime" in gfs_final.columns:
+                    gfs_final["datetime"] = pd.to_datetime(gfs_final["datetime"], errors="coerce")
+                    antes = len(gfs_final)
+                    gfs_final = gfs_final.sort_values("datetime").drop_duplicates(subset=["datetime"], keep="last")
+                    removidas = antes - len(gfs_final)
+                    gfs_final = gfs_final.sort_values("datetime").reset_index(drop=True)
+                    print(f"[Info] Merge GFS: removidas {removidas} duplicatas por datetime (priorizando f00 do dia seguinte).")
+                else:
+                    print("[Aviso] Coluna 'datetime' não encontrada no merge GFS!")
+
                 arq_final_gfs = DIR_ETL.parent / "datasets" / f"{data_inicial}_{data_final}_gfs.csv"
                 gfs_final.to_csv(arq_final_gfs, index=False)
                 print(f"[Sucesso] Arquivo final GFS gerado com sucesso: {arq_final_gfs}")
