@@ -45,6 +45,7 @@ DIR_ETL = Path(__file__).parent
 ARQ_ETAPAS = DIR_ETL / "configs/etapas.yaml"
 DIR_DADOS = DIR_ETL / "dados"
 DIR_GFS = DIR_DADOS / "gfs"
+ARQ_VAR_TARGETS = DIR_ETL.parent / "datasets" / "var_targets.txt"
 
 WD_DIR = Path((DIR_ETL / Path("configs/wd_dir.txt")).read_text().strip())
 WPS_DIR = WD_DIR / "WPS"
@@ -128,6 +129,7 @@ def update_etapas(etapas: dict):
 
 def enviar_email(assunto: str, corpo: str):
     """Envia um e-mail (ou loga status) para o usuário com o status do processo."""
+    # TODO: implementar
     print(f"\n[EMAIL] Assunto: {assunto}\nCorpo: {corpo}\n")
 
 # ---- Extração GFS ----
@@ -196,6 +198,9 @@ def preencher_namelist_wps(data_inicial: dt.date, data_final: dt.date):
     # Substitui as datas no conteúdo do namelist.wps
     content = content.replace("_wps_data_inicial_", data_inicial.strftime("%Y-%m-%d_%H:%M:%S"))
     content = content.replace("_wps_data_final_", data_final.strftime("%Y-%m-%d_%H:%M:%S"))
+
+    if not content.endswith("\n"):
+        content += "\n"
 
     namelist_path = WPS_DIR / "namelist.wps"
 
@@ -457,7 +462,7 @@ def main():
     data_inicial = parse_data(etapas.get("data_inicial", "2026-06-01"))
     data_final = parse_data(etapas.get("data_final", "2026-06-30"))
     lat_alvo = etapas.get("lat", -22.804943908755842)
-    lon_alvo = etapas.get("long", -43.256455001858306)
+    long_alvo = etapas.get("long", -43.256455001858306)
 
     arquivos_gerados = etapas.get('arquivos_gerados', arquivos_gerados)
     tamanho_arquivos = etapas.get('tamanho_arquivos', tamanho_arquivos)
@@ -519,8 +524,6 @@ def main():
             preencher_namelist_input(data_atual, data_atual + dt.timedelta(days=1))
             print("FIM ETAPA 0: Download dos dados GFS\n\n")
 
-        # preencher_namelist_input(data_atual, data_atual + dt.timedelta(days=1))
-        # exit(0)
         # - Etapa 1: Conversão GFS GRIB2 -> CSV (Passo 1.1) -
         if etapas.get('etapa') == 1:
             print("INI ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
@@ -536,7 +539,7 @@ def main():
                     df = pd.read_csv(arq_csv)
                 else:
                     print(f"[PROCESSANDO] Convertendo GFS para CSV para {data_atual}: {arq_csv}...")
-                    df = processar_diretorio_gfs(dir_grib_dia, lat_alvo, lon_alvo, arq_csv)
+                    df = processar_diretorio_gfs(dir_grib_dia, lat_alvo, long_alvo, arq_csv)
 
                     if not df.empty:
                         arquivos_gerados['gfs_csv'] += 1
@@ -673,19 +676,65 @@ def main():
             print("INI ETAPA 8: Conversão WRF -> CSV\n")
             tempo_execucao['convertendo_dados_wrf_para_csv'] = dt.datetime.now()
             try:
-                arq_csv = str(DIR_DADOS / "csv" / f"wrfout_{data_atual.strftime('%Y%m%d')}.csv")
+                arq_csv = str(DIR_ETL.parent.parent / "datasets" / "wrfout_csv" / f"wrfout_{data_atual.strftime('%Y%m%d')}.csv")
                 if Path(arq_csv).exists():
                     print(f"[Existente] CSV já existe para {data_atual}: {arq_csv}!")
                 else:
-                    print(f"[Aviso] TBA")
+                    df = processar_diretorio_wrfout(
+                        wrf_dir=str(WRF_DIR),
+                        lat=lat_alvo,
+                        lon=long_alvo,
+                        arquivo_targets=str(ARQ_VAR_TARGETS),
+                        arq_saida=arq_csv,
+                        pattern="wrfout*",
+                        verbose=True,
+                        quiet_unsupported=True,
+                    )
+
+                    if df.empty:
+                        print(f"[Aviso] Nenhum dado WRFOUT convertido para {data_atual}.")
+                    else:
+                        arquivos_gerados['wrfout_csv'] += 1
+                        tamanho_arquivos['wrfout_csv'] += Path(arq_csv).stat().st_size
+                        print(f"[Sucesso] Conversão WRF -> CSV concluída para {data_atual}: {arq_csv} ({len(df)} registros)")
             finally:
                 tempo_execucao['convertendo_dados_wrf_para_csv'] = (dt.datetime.now() - tempo_execucao['convertendo_dados_wrf_para_csv']).total_seconds()
             print("\nFIM ETAPA 8: Conversão WRF -> CSV\n")
-        if etapas.get('etapa') >= 9:
+
+        if etapas.get('etapa') == 9:
+            print("INI ETAPA 9: Limpeza de arquivos intermediários\n")
+            # Retira arquivos de input e wrfout, mas mantém as pastas
+            pasta_input = DIR_DADOS / "input"
+            pasta_wrfout = DIR_DADOS / "wrfout"
+            for arquivo in pasta_input.glob("*"):
+                arquivo.unlink()
+            for arquivo in pasta_wrfout.glob("*"):
+                arquivo.unlink()
+            print("\nFIM ETAPA 9: Limpeza de arquivos intermediários\n")
+        
+        if etapas.get('etapa') >= 11:
             print(f"[Concluído] ETL GFS para {data_atual} finalizado com sucesso!")
             etapas['etapa'] = 0
             update_etapas(etapas)
         break  # Para fins de teste
+
+    if (data_atual >= data_de_agora) or (data_atual > data_final):
+        print("Juntando arquivos csv em um único arquivo final...")
+        arq_dir = DIR_ETL.parent.parent / "datasets" / "wrfout_csv"
+
+        for arquivo in arq_dir.glob("wrfout_*.csv"):
+            df = pd.read_csv(arquivo)
+            if arquivo.name == f"wrfout_{data_inicial.strftime('%Y%m%d')}.csv":
+                df_final = df
+            else:
+                df_final = pd.concat([df_final, df], ignore_index=True)
+        
+        arq_final = DIR_ETL.parent.parent / "datasets" / f"{data_inicial}_{data_final}.csv"
+        df_final.to_csv(arq_final, index=False)
+        print(f"[Sucesso] Arquivo final gerado com sucesso: {arq_final}\n")
+        print(f"[Concluído] ETL GFS finalizado com sucesso para o período {data_inicial} até {data_final}! Arquivo final: {arq_final}")
+        enviar_email(assunto="ETL GFS Concluído", corpo=f"ETL GFS finalizado com sucesso para o período {data_inicial} até {data_final}! Arquivo final: {arq_final}")
+        
 
 if __name__ == "__main__":
     main()
