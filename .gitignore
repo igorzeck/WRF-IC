@@ -4,6 +4,7 @@ WRF-IC.Rproj
 # - Temporários/Obsoletos -
 scripts/
 __pycache__/
+parcial_*
 # - Recursos -
 *.nc
 *.png

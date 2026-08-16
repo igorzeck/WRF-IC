@@ -26,6 +26,7 @@
 # - A Vtable do WPS deve estar configurado corretamente e linkada no diretório WPS antes de rodar o script.
 # ======
 # TODO: Devido ao jeito que as pastas são organizadas ele não funcionaria talvez para horizontes < 24h? Verificar isso
+# TODO: Mover dados para datasets
 # ---- Setup ----
 import os
 import sys
@@ -95,14 +96,14 @@ tamanho_arquivos = {
 }
 
 # ---- Helpers ----
-def parse_data(val) -> dt.date:
-    """Converte string ou date/datetime para dt.date."""
+def parse_data(val) -> dt.datetime:
+    """Converte string ou date/datetime para dt.datetime."""
     if isinstance(val, dt.datetime):
-        return val.date()
-    elif isinstance(val, dt.date):
         return val
+    elif isinstance(val, dt.date):
+        return dt.datetime(val.year, val.month, val.day)
     elif isinstance(val, str):
-        return dt.datetime.strptime(val, "%Y-%m-%d").date()
+        return dt.datetime.strptime(val, "%Y-%m-%d %H:%M:%S")
     raise ValueError(f"Formato de data inválido: {val}")
 
 def carregar_etapas() -> dict:
@@ -429,11 +430,11 @@ def rodar_real() -> bool:
 
 def rodar_wrf(cores: int) -> bool:
     """Roda o WRF. NOTE: Para ver o output desse: `tail -f rsl.out.0000` em outro terminal"""
-    intermediate_files = list(Path(WRF_DIR).glob("wrfout*")) + list(Path(WRF_DIR).glob("wrfrst*"))
+    wrfout_files = list(Path(WRF_DIR).glob("wrfout*")) + list(Path(WRF_DIR).glob("wrfrst*"))
 
-    if intermediate_files:
+    if wrfout_files:
         print("[Aviso] Deletando arquivos wrfout*, wrfrst* existentes no WRF_DIR antes de rodar o WRF...")
-        for arquivo in intermediate_files:
+        for arquivo in wrfout_files:
             arquivo.unlink()
 
     # NOTE: Necessário linkar (ln -sf) arquivos met_em* do WPS para o diretório do WRF antes de rodar o Real
@@ -478,8 +479,8 @@ def main():
 
     etapas = carregar_etapas()
 
-    data_inicial = parse_data(etapas.get("data_inicial", "2026-06-01"))
-    data_final = parse_data(etapas.get("data_final", "2026-06-30"))
+    data_inicial: dt.datetime = parse_data(etapas.get("data_inicial", "2026-06-01 00:00:00"))
+    data_final: dt.datetime = parse_data(etapas.get("data_final", "2026-06-30 23:00:00"))
     lat_alvo = etapas.get("lat", -22.804943908755842)
     long_alvo = etapas.get("long", -43.256455001858306)
     
@@ -487,10 +488,10 @@ def main():
     tamanho_arquivos = etapas.get('tamanho_arquivos', tamanho_arquivos)
     tempo_execucao = etapas.get('tempo_execucao', tempo_execucao)
 
-    str_mais_recente = etapas.get("data_mais_recente")
-    data_mais_recente = parse_data(str_mais_recente) if str_mais_recente else data_inicial
+    str_mais_recente = etapas.get("data_mais_recente", "2026-06-01 00:00:00")
+    data_mais_recente: dt.datetime = parse_data(str_mais_recente) if str_mais_recente else data_inicial
 
-    # Somente se não for a primeira run
+    # Mensagem de aviso caso continuando a partir de uma data mais recente que a inicial
     if (data_mais_recente != data_inicial) and (data_mais_recente < data_final):
         print(f"[Aviso] Continuando ETL do GFS a partir de {data_mais_recente} até {data_final}.")
 
@@ -500,7 +501,7 @@ def main():
     dias_inicio = (data_mais_recente - data_inicial).days
 
     for offset in range(dias_inicio, dias_totais + 1):
-        data_de_agora = dt.date.today()
+        data_de_agora = dt.datetime.now()
         
         data_atual = data_inicial + dt.timedelta(days=offset)
         data_status = ""
@@ -520,6 +521,7 @@ def main():
         if etapas.get('etapa', 0) == 0:
             print("ETAPA 0: Download dos dados GFS\n")
             tempo_execucao['extracao_dados_gfs'] = dt.datetime.now()
+            # NOTE: Nescessário 24h de dados para interpolar 23h de previsão corretamente
             sucesso = extrair_dados_gfs(data_atual, hora_run=0, forecast_inicio=0, forecast_fim=24)
             tempo_execucao['extracao_dados_gfs'] = (dt.datetime.now() - tempo_execucao['extracao_dados_gfs']).total_seconds()
 
@@ -531,18 +533,18 @@ def main():
                 msg_erro = f"Falha ao baixar dados GFS para {data_atual}."
                 print(f"[Erro] {msg_erro} Interrompendo execução.")
                 enviar_email(assunto=f"Erro no ETL GFS para {data_atual}", corpo=msg_erro)
-                break
+                sys.exit(1)
 
             preencher_namelist_wps(data_atual, data_atual + dt.timedelta(days=1))
-            # WRF precisa de 1h a menos para interpolar corretamente
+            # NOTE: WRF precisa de 1h a menos para interpolar corretamente
             preencher_namelist_input(data_atual, data_atual + dt.timedelta(hours=23))
             print("FIM ETAPA 0: Download dos dados GFS\n\n")
-
+        
         # - Etapa 1: Conversão GFS GRIB2 -> CSV (Passo 1.1) -
         if etapas.get('etapa') == 1:
             print("INI ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
             dir_grib_dia = str(DIR_GFS / data_atual.strftime('%Y%m%d'))
-            arq_csv = str(DIR_DADOS / "gfs_csv" / f"gfs_{data_atual.strftime('%Y%m%d')}.csv")
+            arq_csv = str(DIR_ETL.parent / "datasets" / "gfs_csv" / f"parcial_gfs_{data_atual.strftime('%Y%m%d')}.csv")
 
             print(f"--- Convertendo GFS GRIB2 para CSV: {data_atual} ---\n")
             try:
@@ -573,13 +575,13 @@ def main():
                     print(f"\n[Erro] {msg_erro}")
 
                     enviar_email(assunto=f"Erro no ETL GFS (CSV) para {data_atual}", corpo=msg_erro)
-                    break
+                    sys.exit(1)
 
             except Exception as e:
                 msg_erro = f"Erro ao converter GFS para CSV em {data_atual}: {e}"
                 print(f"[Erro] {msg_erro}")
                 enviar_email(assunto=f"Erro no ETL GFS (CSV) para {data_atual}", corpo=msg_erro)
-                break
+                sys.exit(1)
             print(f"\nFIM ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
         
         print("=== WPS ===\n")
@@ -608,9 +610,9 @@ def main():
 
                 else:
                     print(f"[Erro] Falha ao rodar Geogrid para {data_atual}!")
-                    break
+                    sys.exit(1)
             else:
-                print(f"[Aviso] Pulando Geogrid para {data_atual} (já foi rodado na primeira run).")
+                print(f"[Aviso] Pulando Geogrid para {data_atual} (já foi rodado antes).")
 
             print("\nFIM ETAPA 2: Geogrid\n")
 
@@ -626,7 +628,7 @@ def main():
                 update_etapas(etapas)
             else:
                 print(f"[Erro] Falha ao rodar Link Grib para {data_atual}!")
-                break
+                sys.exit(1)
             print("\nFIM ETAPA 3: Link Grib\n")
         
         if etapas.get('etapa') == 4:
@@ -641,7 +643,7 @@ def main():
                 update_etapas(etapas)
             else:
                 print(f"[Erro] Falha ao rodar Ungrib para {data_atual}!")
-                break
+                sys.exit(1)
             print("\nFIM ETAPA 4: Ungrib\n")
 
         if etapas.get('etapa') == 5:
@@ -657,7 +659,7 @@ def main():
                 update_etapas(etapas)
             else:
                 print(f"[Erro] Falha ao rodar Metgrid para {data_atual}!")
-                break
+                sys.exit(1)
 
             print("\nFIM ETAPA 5: Metgrid\n")
         
@@ -675,7 +677,7 @@ def main():
                 update_etapas(etapas)
             else:
                 print(f"[Erro] Falha ao rodar Real para {data_atual}!")
-                break
+                sys.exit(1)
             print("\nFIM ETAPA 6: Real\n")
         
         if etapas.get('etapa') == 7:
@@ -690,7 +692,7 @@ def main():
                 update_etapas(etapas)
             else:
                 print(f"[Erro] Falha ao rodar WRF para {data_atual}!")
-                break
+                sys.exit(1)
             print("\nFIM ETAPA 7: WRF\n")
 
         if etapas.get('etapa') == 8:
@@ -698,7 +700,7 @@ def main():
             tempo_execucao['convertendo_dados_wrf_para_csv'] = dt.datetime.now()
             try:
                 sucesso = False
-                arq_csv = str(DIR_ETL.parent / "datasets" / "wrfout_csv" / f"wrfout_d{int(etapas.get('dom', 4)):02d}_{data_atual.strftime('%Y%m%d')}.csv")
+                arq_csv = str(DIR_ETL.parent / "datasets" / "wrfout_csv" / f"parcial_wrfout_d{int(etapas.get('dom', 4)):02d}_{data_atual.strftime('%Y%m%d')}.csv")
                 if Path(arq_csv).exists():
                     sucesso = True
                     print(f"[Existente] CSV já existe para {data_atual}: {arq_csv}!")
@@ -730,7 +732,7 @@ def main():
                 msg_erro = f"Erro ao converter WRF para CSV em {data_atual}: {e}"
                 print(f"[Erro] {msg_erro}")
                 enviar_email(assunto=f"Erro no ETL WRF (CSV) para {data_atual}", corpo=msg_erro)
-                break
+                sys.exit(1)
             finally:
                 tempo_execucao['convertendo_dados_wrf_para_csv'] = (dt.datetime.now() - tempo_execucao['convertendo_dados_wrf_para_csv']).total_seconds()
             print("\nFIM ETAPA 8: Conversão WRF -> CSV\n")
@@ -787,16 +789,15 @@ def main():
             etapas['etapa'] = 0
             etapas['data_mais_recente'] = data_atual.strftime("%Y-%m-%d")
             update_etapas(etapas)
-            primeira_run = False
 
     if (data_atual >= data_de_agora) or (data_atual > data_final):
         print("Juntando arquivos csv em um único arquivo final...")
         wrfout_arq_dir = DIR_ETL.parent / "datasets" / "wrfout_csv"
-        gfs_arq_dir = DIR_DADOS / "gfs_csv"
+        gfs_arq_dir = DIR_ETL.parent / "datasets" / "gfs_csv"
         dom = int(etapas.get("dom", 4))
 
         # Merge final dos CSVs GFS (um único arquivo para o período)
-        gfs_csvs = sorted(gfs_arq_dir.glob("gfs_*.csv"))
+        gfs_csvs = sorted(gfs_arq_dir.glob("parcial_gfs_*.csv"))
         if not gfs_csvs:
             print(f"[Aviso] Nenhum CSV GFS encontrado para merge em {gfs_arq_dir}.")
         else:
@@ -816,7 +817,7 @@ def main():
                 print(f"[Sucesso] Arquivo final GFS gerado com sucesso: {arq_final_gfs}")
 
         # Merge final dos CSVs WRFOUT (um único arquivo para o período)
-        arquivos_wrfout_csv = sorted(wrfout_arq_dir.glob(f"wrfout_d{dom:02d}_*.csv"))
+        arquivos_wrfout_csv = sorted(wrfout_arq_dir.glob(f"parcial_wrfout_d{dom:02d}_*.csv"))
 
         if not arquivos_wrfout_csv:
             print(f"[Aviso] Nenhum arquivo encontrado para merge em {wrfout_arq_dir} (domínio d{dom:02d}).")
