@@ -1,36 +1,36 @@
 arquivos_gerados:
   geogrid: 4
-  gfs: 9
-  gfs_csv: 2
-  metgrid: 36
-  ungrib: 10
-  wrfinput: 24
-  wrfout: 100
-  wrfout_csv: 1
+  gfs: 18
+  gfs_csv: 3
+  metgrid: 108
+  ungrib: 28
+  wrfinput: 32
+  wrfout: 300
+  wrfout_csv: 3
   wrfrst: 0
 cores: 6
 data_final: '2026-06-03 00:00:00'
 data_inicial: '2026-06-01 00:00:00'
-data_mais_recente: '2026-06-02 00:00:00'
+data_mais_recente: '2026-06-03 00:00:00'
 dom: 4
-etapa: 4
+etapa: 0
 geogrid_rodou: true
 tamanho_arquivos:
   geogrid: 3032933
-  gfs: 4855705911
-  gfs_csv: 6282
-  metgrid: 103277599
-  ungrib: 8181788240
-  wrfinput: 190522440
-  wrfout: 1059289060
-  wrfout_csv: 9820
+  gfs: 9726975357
+  gfs_csv: 9341
+  metgrid: 310566052
+  ungrib: 22909007072
+  wrfinput: 255231697
+  wrfout: 3193597000
+  wrfout_csv: 29990
   wrfrst: 0
 tempo_execucao:
-  conversao_dados_gfs_para_csv: 0.002155
-  convertendo_dados_wrf_para_csv: 10.507133
-  extracao_dados_gfs: 0.000387
+  conversao_dados_gfs_para_csv: 0.002295
+  convertendo_dados_wrf_para_csv: 9.465079
+  extracao_dados_gfs: 0.000428
   geogrid: 6.235083
-  metgrid: 339.817176
-  real: 10.743476
-  ungrib: 81.657715
-  wrf: 9847.519806
+  metgrid: 335.628644
+  real: 10.783472
+  ungrib: 167.797958
+  wrf: 9895.65052

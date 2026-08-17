@@ -792,7 +792,8 @@ def main():
             etapas['etapa'] = 0
             update_etapas(etapas)
 
-    if (data_atual >= data_de_agora) or (data_atual > data_final):
+    # TODO: Mudar nome para que não tenha espaços, apenas underline
+    if (data_atual >= data_de_agora) or (data_atual >= data_final):
         print("Juntando arquivos csv em um único arquivo final...")
         wrfout_arq_dir = DIR_ETL.parent / "datasets" / "wrfout_csv"
         gfs_arq_dir = DIR_ETL.parent / "datasets" / "gfs_csv"
@@ -827,7 +828,7 @@ def main():
                 else:
                     print("[Aviso] Coluna 'datetime' não encontrada no merge GFS!")
 
-                arq_final_gfs = DIR_ETL.parent / "datasets" / f"{data_inicial}_{data_final}_gfs.csv"
+                arq_final_gfs = DIR_ETL.parent / "datasets" / f"gfs_{data_inicial.date().isoformat()}_{data_final.date().isoformat()}.csv"
                 gfs_final.to_csv(arq_final_gfs, index=False)
                 print(f"[Sucesso] Arquivo final GFS gerado com sucesso: {arq_final_gfs}")
 
@@ -856,7 +857,20 @@ def main():
                 print("[Aviso] Nenhum CSV válido para merge após leitura.")
             else:
                 df_final = pd.concat(dfs, ignore_index=True)
-                arq_final = DIR_ETL.parent / "datasets" / f"{data_inicial}_{data_final}_d{dom:02d}.csv"
+
+                # TODO: Deixado para que a análise remova as duplicatas
+                # if "datetime" in df_final.columns:
+                #     df_final["datetime"] = pd.to_datetime(df_final["datetime"], errors="coerce")
+                #     antes = len(df_final)
+                #     df_final = df_final.sort_values("datetime").drop_duplicates(subset=["datetime"], keep="last")
+                #     removidas = antes - len(df_final)
+                #     df_final = df_final.sort_values("datetime").reset_index(drop=True)
+                #     print(f"[Info] Merge WRFOUT: removidas {removidas} duplicatas por datetime (priorizando f00 do dia seguinte).")
+                # else:
+                #     print("[Aviso] Coluna 'datetime' não encontrada no merge WRFOUT!")
+                
+
+                arq_final = DIR_ETL.parent / "datasets" / f"wrfout_d{dom:02d}_{data_inicial.date().isoformat()}_{data_final.date().isoformat()}.csv"
                 df_final.to_csv(arq_final, index=False)
 
                 print(f"[Sucesso] Arquivo final gerado com sucesso: {arq_final}")
