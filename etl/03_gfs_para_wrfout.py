@@ -159,6 +159,8 @@ def baixar_arquivo_gfs(url: str, destino: Path, tentativas: int = 3, timeout: in
     global arquivos_gerados, tamanho_arquivos
 
     temp_path = destino.with_suffix(destino.suffix + ".part")
+    arq_valido = True
+
     for tentativa in range(1, tentativas + 1):
         print(f"  [Baixando] {destino.name} (tentativa {tentativa}/{tentativas})...", end="\r")
         try:
@@ -166,12 +168,16 @@ def baixar_arquivo_gfs(url: str, destino: Path, tentativas: int = 3, timeout: in
             with urllib.request.urlopen(req, timeout=timeout) as response, open(temp_path, "wb") as out_file:
                 while True:
                     chunk = response.read(1024 * 1024)
+                    status_code: int = response.status
+
+                    arq_valido = status_code >= 200 and status_code < 300
+
                     if not chunk:
                         break
                     out_file.write(chunk)
 
-            if temp_path.stat().st_size <= 0:
-                raise ValueError("download vazio")
+            if temp_path.stat().st_size == 0 or not arq_valido:
+                raise ValueError(f"download incompleto ou corrompido.")
 
             temp_path.replace(destino)
             print(f"  [Concluído] {destino.name} ({destino.stat().st_size / (1024*1024):.1f} MB)" + " " * 20)
@@ -185,7 +191,7 @@ def baixar_arquivo_gfs(url: str, destino: Path, tentativas: int = 3, timeout: in
             if temp_path.exists():
                 temp_path.unlink()
 
-    if destino.exists() and destino.stat().st_size == 0:
+    if destino.exists() and (destino.stat().st_size == 0 or not arq_valido):
         destino.unlink()
     return False
 
@@ -492,21 +498,22 @@ def main():
 
     etapas = carregar_etapas()
 
-    data_inicial: dt.datetime = parse_data(etapas.get("data_inicial", "2026-06-01 00:00:00"))
-    data_final: dt.datetime = parse_data(etapas.get("data_final", "2026-06-30 23:00:00"))
+    data_inicial: dt.datetime = parse_data(etapas.get("data_inicial"))
+    data_final: dt.datetime = parse_data(etapas.get("data_final"))
     lat_alvo = etapas.get("lat", -22.804943908755842)
     long_alvo = etapas.get("long", -43.256455001858306)
-    
-    arquivos_gerados = etapas.get('arquivos_gerados', arquivos_gerados)
-    tamanho_arquivos = etapas.get('tamanho_arquivos', tamanho_arquivos)
-    tempo_execucao = etapas.get('tempo_execucao', tempo_execucao)
 
-    str_mais_recente = etapas.get("data_mais_recente", "2026-06-01 00:00:00")
+    str_mais_recente = etapas.get("data_mais_recente")
     data_mais_recente: dt.datetime = parse_data(str_mais_recente) if str_mais_recente else data_inicial
 
     # Mensagem de aviso caso continuando a partir de uma data mais recente que a inicial
     if (data_mais_recente != data_inicial) and (data_mais_recente < data_final):
         print(f"[Aviso] Continuando ETL do GFS a partir de {data_mais_recente} até {data_final}.")
+    elif (data_mais_recente == data_inicial):
+        # Somente se não for primeira run
+        arquivos_gerados = etapas.get('arquivos_gerados', arquivos_gerados)
+        tamanho_arquivos = etapas.get('tamanho_arquivos', tamanho_arquivos)
+        tempo_execucao = etapas.get('tempo_execucao', tempo_execucao)
 
     print(f"ETL GFS iniciado | Período: {data_inicial} até {data_final} | Progresso atual: {data_mais_recente}")
 
