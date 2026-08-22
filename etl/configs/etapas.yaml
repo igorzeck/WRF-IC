@@ -1,6 +1,6 @@
 arquivos_gerados:
   geogrid: 0
-  gfs: 0
+  gfs: 1
   gfs_csv: 0
   metgrid: 0
   ungrib: 0
@@ -11,13 +11,13 @@ arquivos_gerados:
 cores: 6
 data_final: '2026-06-30 00:00:00'
 data_inicial: '2026-06-01 00:00:00'
-data_mais_recente: '2026-06-05 00:00:00'
+data_mais_recente: '2026-06-20 00:00:00'
 dom: 4
-etapa: 0
+etapa: 4
 geogrid_rodou: true
 tamanho_arquivos:
   geogrid: 0
-  gfs: 0
+  gfs: 551247286
   gfs_csv: 0
   metgrid: 0
   ungrib: 0
@@ -26,9 +26,9 @@ tamanho_arquivos:
   wrfout_csv: 0
   wrfrst: 0
 tempo_execucao:
-  conversao_dados_gfs_para_csv: 0
+  conversao_dados_gfs_para_csv: 0.005775
   convertendo_dados_wrf_para_csv: 0
-  extracao_dados_gfs: 0
+  extracao_dados_gfs: 110.069396
   geogrid: 0
   metgrid: 0
   real: 0
