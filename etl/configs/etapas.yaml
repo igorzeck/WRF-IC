@@ -11,7 +11,7 @@ arquivos_gerados:
 cores: 6
 data_final: '2026-06-30 00:00:00'
 data_inicial: '2026-06-01 00:00:00'
-data_mais_recente: '2026-06-05 00:00:00'
+data_mais_recente: '2026-06-30 00:00:00'
 dom: 4
 etapa: 7
 geogrid_rodou: true
