@@ -31,19 +31,18 @@ wrf_raw <- read_csv(dt_path, show_col_types = FALSE)
 
 # 2. Limpeza do dataset ----
 janitor::clean_names(wrf_raw) %>%
-  select(datetime, temperature_htgl, dew_point_temperature_htgl, pressure, wind_speed, relative_humidity_htgl) %>%
   filter(!is.na(datetime)) -> wrf_clean
 
 # 3. Transformações ----
 wrfout_metar_df <- wrf_clean %>%
   mutate(
     datetime = as.POSIXct(datetime, tz = "UTC"),
-    temp_ar_wrf = temperature_htgl - 273.15,
-    temp_orvalho_wrf = dew_point_temperature_htgl,
-    pressao_wrf = pressure / 100,
-    vel_vento_wrf = wind_speed * 1.94384,
-    umidade_relativa_wrf = relative_humidity_htgl
-  ) %>% select(datetime, ends_with("_wrf"))
+    temp_ar = temperature_htgl - 273.15,
+    temp_orvalho = dew_point_temperature_htgl,
+    pressao = pressure / 100,
+    vel_vento = wind_speed * 1.94384,
+    umidade_relativa = relative_humidity_htgl
+  ) %>% select(datetime, temp_ar, temp_orvalho, pressao, vel_vento, umidade_relativa)
 
 # 4. Exportar para CSV
 wrfout_metar_df %>%

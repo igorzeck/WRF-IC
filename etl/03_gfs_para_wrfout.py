@@ -515,7 +515,7 @@ def main():
         tamanho_arquivos = etapas.get('tamanho_arquivos', tamanho_arquivos)
         tempo_execucao = etapas.get('tempo_execucao', tempo_execucao)
 
-    print(f"ETL GFS iniciado | Período: {data_inicial} até {data_final} | Progresso atual: {data_mais_recente}")
+    print(f"Pipeline iniciada | Período: {data_inicial} até {data_final} | Progresso atual: {data_mais_recente}")
 
     dias_totais = (data_final - data_inicial).days
     dias_inicio = (data_mais_recente - data_inicial).days
@@ -539,9 +539,16 @@ def main():
 
         if data_status:
             print(data_status)
-            enviar_email(assunto="ETL GFS Concluído", corpo=data_status)
+            enviar_email(assunto="GFS -> WRF -> CSV Concluído", corpo=data_status)
             break
 
+        # - Etapa sub 0: Verificação de nescessidade de rodar pipeline para o dia atual -
+        # NOTE: Usa o WRFOUT parcial gerado na etapa 1 para verificar se o pipeline precisa ser rodado para o dia atual
+        # NOTE: Esse short-circuit pode PROPOSITALMENTE manter os arquivos em caso de dias não sequenciais - deve ser utilizado com cautela para não lotar o disco
+        if Path(DIR_ETL.parent / "datasets" / "wrfout_csv" / f"parcial_wrfout_d0{etapas.get('dom', 4)}_{data_atual.strftime('%Y%m%d')}.csv").exists():
+            print(f"[Aviso] WRFOUT parcial já existe para {data_atual}. Pulando execução do pipeline para este dia.")
+            continue
+    
         # - Etapa 0: Download dos dados GFS -
         if etapas.get('etapa', 0) == 0:
             print("ETAPA 0: Download dos dados GFS\n")
@@ -557,7 +564,7 @@ def main():
             else:
                 msg_erro = f"Falha ao baixar dados GFS para {data_atual}."
                 print(f"[Erro] {msg_erro} Interrompendo execução.")
-                enviar_email(assunto=f"Erro no ETL GFS para {data_atual}", corpo=msg_erro)
+                enviar_email(assunto=f"Erro na execução da pipeline para {data_atual}", corpo=msg_erro)
                 sys.exit(1)
 
             preencher_namelist_wps(data_atual, data_atual + dt.timedelta(days=1))
@@ -598,13 +605,13 @@ def main():
 
                     print(f"\n[Erro] {msg_erro}")
 
-                    enviar_email(assunto=f"Erro no ETL GFS (CSV) para {data_atual}", corpo=msg_erro)
+                    enviar_email(assunto=f"Erro na execução da pipeline para {data_atual}", corpo=msg_erro)
                     sys.exit(1)
 
             except Exception as e:
                 msg_erro = f"Erro ao converter GFS para CSV em {data_atual}: {e}"
                 print(f"[Erro] {msg_erro}")
-                enviar_email(assunto=f"Erro no ETL GFS (CSV) para {data_atual}", corpo=msg_erro)
+                enviar_email(assunto=f"Erro na execução da pipeline para {data_atual}", corpo=msg_erro)
                 sys.exit(1)
             print(f"\nFIM ETAPA 1: Conversão GFS GRIB2 -> CSV\n")
         
@@ -795,7 +802,7 @@ def main():
             print("\nFIM ETAPA 9: Limpeza de arquivos intermediários\n")
         
         if etapas.get('etapa') == 10:
-            print(f"[Concluído] ETL GFS para {data_atual} finalizado com sucesso!")
+            print(f"[Concluído] Pipeline para {data_atual} finalizada com sucesso!")
             etapas['etapa'] = 0
             update_etapas(etapas)
 
@@ -845,7 +852,7 @@ def main():
         if not arquivos_wrfout_csv:
             print(f"[Aviso] Nenhum arquivo encontrado para merge em {wrfout_arq_dir} (domínio d{dom:02d}).")
             enviar_email(
-                assunto="ETL GFS Concluído",
+                assunto="Pipeline Concluída",
                 corpo=(
                     f"ETL finalizado para {data_inicial} até {data_final}, "
                     f"mas não há CSVs para merge do domínio d{dom:02d}."
@@ -882,11 +889,11 @@ def main():
 
                 print(f"[Sucesso] Arquivo final gerado com sucesso: {arq_final}")
                 print(
-                    f"[Concluído] ETL GFS finalizado para {data_inicial} até {data_final}. "
+                    f"[Concluído] Pipeline finalizada para {data_inicial} até {data_final}. "
                     f"Arquivo final: {arq_final}"
                 )
                 enviar_email(
-                    assunto="ETL GFS Concluído",
+                    assunto="Pipeline Concluída",
                     corpo=(
                         f"ETL finalizado com sucesso para {data_inicial} até {data_final}. "
                         f"Arquivo final: {arq_final}"

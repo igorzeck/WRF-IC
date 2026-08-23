@@ -31,19 +31,18 @@ gfs_raw <- read_csv(dt_path, show_col_types = FALSE)
 
 # 2. Limpeza do dataset ----
 janitor::clean_names(gfs_raw) %>%
-  select(datetime, temperature_htgl, dew_point_temperature_htgl, pressure, wind_speed, relative_humidity_htgl) %>%
   filter(!is.na(datetime)) -> gfs_clean
 
 # 3. Transformações ----
 gfs_metar_df <- gfs_clean %>%
   mutate(
     datetime = as.POSIXct(datetime, tz = "UTC"),
-    vel_vento_gfs = vel_vento * 1.94384, # m/s -> nós
-    temp_ar_gfs = temp_ar,
-    temp_orvalho_gfs = temp_orvalho,
-    pressao_gfs = pressao,
-    umidade_relativa_gfs = umidade_relativa * 100
-  ) %>% select(datetime, ends_with("_gfs"))
+    vel_vento = vel_vento * 1.94384, # m/s -> nós
+    temp_ar = temp_ar,
+    temp_orvalho = temp_orvalho,
+    pressao = pressao,
+    umidade_relativa = umidade_relativa * 100
+  ) %>% select(datetime, vel_vento, temp_ar, temp_orvalho, pressao, umidade_relativa)
 
 # 4. Exportar para CSV
 gfs_metar_df %>%
